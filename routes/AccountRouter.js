@@ -137,7 +137,7 @@ Router.get("/current",CheckLogin,(req,res)=>{
 //     }
 // })
 
-Router.post('/adduser',CheckLogin,addfacultyValidator,(req,res)=>{
+Router.post('/adduser',addfacultyValidator,(req,res)=>{
     let result = validationResult(req)
     if(result.errors.length ===0){
         let {user,password,role}= req.body

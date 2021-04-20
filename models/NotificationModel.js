@@ -7,7 +7,7 @@ const NotificationSchema = new Schema({
     description:String,
     role:String,
     user:String,
-    date:Date
+    date:{type: Date, default: Date.now}
 })
 
 module.exports = mongoose.model('Notification',NotificationSchema)

@@ -3,7 +3,7 @@ const Router = express.Router()
 const Role = require('../models/RoleModel')
 const CheckLogin = require('../auth/CheckLogin')
 
-Router.get('/',CheckLogin,(req,res)=>{
+Router.get('/',(req,res)=>{
     Role.find()
     .then(Roles =>{
         res.json({
