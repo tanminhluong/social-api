@@ -11,10 +11,14 @@ const Account = require('./models/AccountModel')
 const RoleRouter = require('./routes/RoleRouter')
 const NotificationrRouter = require('./routes/NotificationRouter')
 const AccountRouter = require('./routes/AccountRouter')
-const AddRole = require('./routes/AddRole')
+const AdminRouter = require('./routes/AdminRouter')
+const NewFeedRouter = require('./routes/NewFeedRouter')
+// const AddRole = require('./routes/AddRole')
 app.use(cors())
 app.use(passport.initialize())
 
+const CheckLogin = require('./auth/CheckLogin')
+const CheckAdmin = require('./middleware/CheckAdmin')
 // function authFaculty(req,res,next){
 
 //     const token  = req.body['token']
@@ -98,11 +102,12 @@ app.get('/auth/google/callback',
         })
 });
 
-app.use('/Role',RoleRouter)
+app.use('/role',RoleRouter)
 app.use('/notification',NotificationrRouter)
 app.use('/account',AccountRouter)
-app.use('/role',AddRole)
-
+// app.use('/role',AddRole)
+app.use('/admin',CheckLogin,CheckAdmin,AdminRouter)
+app.use('/newfeed',CheckLogin,NewFeedRouter)
 mongoose.connect('mongodb://localhost/FPJ',{
     useNewUrlParser:true,
     useUnifiedTopology:true

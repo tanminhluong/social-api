@@ -13,7 +13,6 @@ Router.get('/',CheckLogin,(req,res)=>{
     console.log(req.user)
 })
 
-
 Router.post('/addRole',(req,res)=>{
     let result = validationResult(req)
     if(result.errors.length === 0 ){

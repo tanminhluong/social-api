@@ -3,22 +3,25 @@ const Router = express.Router()
 const {validationResult} = require('express-validator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const multer = require('multer')
 const fs = require('fs')
+const {cloudinary} = require('../configCloud/Cloudinary')
+const upload = require('../configCloud/multer')
 
+// Router.use(express.json({limit:'50mb'}))
 
-
-const upload = multer({dest:'uploads',fileFilter:(req,file,callback)=>{
-    console.log(file)
-    if(file.mimetype.startsWith('image/')){
-        callback(null,true)
-    }else{
-        callback(null,false)
-    }
-},limits:{fileSize:500000}})
+// const upload = multer({dest:'uploads',fileFilter:(req,file,callback)=>{
+//     console.log(file)
+//     if(file.mimetype.startsWith('image/')){
+//         callback(null,true)
+//     }else{
+//         callback(null,false)
+//     }
+// },limits:{fileSize:500000}})
 
 const CheckLogin = require('../auth/CheckLogin')
 const FacultyAccount= require('../models/FacultyAccount')
+
+const CheckAdmin = require('../middleware/CheckAdmin')
 
 const addfacultyValidator = require('./validators/addfacultyValidator')
 const registerValidator = require('./validators/registerValidators')
@@ -31,16 +34,6 @@ Router.get('/',(req,res)=>{
     })
 })
 
-Router.get('/user',(req,res)=>{
-    FacultyAccount.find()
-    .then(FacultyAccounts =>{
-        res.json({
-            code:0,
-            message: 'Đọc danh sách Role thành công',
-            data:FacultyAccounts
-        })
-    })
-})
 
 Router.post('/login',loginValidator,(req,res)=>{
     let result = validationResult(req)
@@ -137,48 +130,7 @@ Router.get("/current",CheckLogin,(req,res)=>{
 //     }
 // })
 
-Router.post('/adduser',addfacultyValidator,(req,res)=>{
-    let result = validationResult(req)
-    if(result.errors.length ===0){
-        let {user,password,role}= req.body
-        FacultyAccount.findOne({user:user})
-        .then(acc=>{
-            if(acc){
-                throw new Error("Khoa đã được tạo") 
-            }
-        })
-        .then(()=>bcrypt.hash(password,10))
-        .then(hashed =>{
-            let userFaculty = new FacultyAccount({
-                user:user,
-                password:hashed,
-                role:role
-            })
-            userFaculty.save()
-        })
-        .then(()=>{
-            return res.json({code:0,message:'Đăng ký thành công'})    
-        })
-        .catch(e=>{
-            return res.json({code:2,message:"Đăng ký thất bại:"+ e.message})
-        })
-        
-    }
-    else{
-        let messages = result.mapped()
-        let message = ''
-        for(m in messages){
-            message= messages[m].msg
-            break
-        }
-        return res.json({code:1,message:message})
-    }
-})
-
-Router.post("/update",(req,res)=>{
-    
-    
-    
+Router.post("/update/avatar",(req,res)=>{ 
     let uploader = upload.single('image')    
     uploader(req,res,err =>{
         let {newname,email} = req.body
@@ -192,10 +144,6 @@ Router.post("/update",(req,res)=>{
             res.end('abc')
         }
     })
-
-})
-
-Router.post("/account/update",(req,res)=>{
 
 })
 
