@@ -1,7 +1,7 @@
 const express = require('express')
 const Router = express.Router()
 const Role = require('../models/RoleModel')
-const CheckLogin = require('../auth/CheckLogin')
+
 
 Router.get('/',(req,res)=>{
     Role.find()

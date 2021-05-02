@@ -13,6 +13,6 @@ const AccountSchema = new Schema({
     avatar:String,
     password: String,
     role:String,
-    faculty:String,
+    faculty:Array,
 })
 module.exports = mongoose.model('Account',AccountSchema)

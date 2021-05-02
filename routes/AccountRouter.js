@@ -15,7 +15,6 @@ Router.get('/',(req,res)=>{
     })
 })
 
-
 Router.post('/login',loginValidator,(req,res)=>{
     let result = validationResult(req)
     let account = undefined
