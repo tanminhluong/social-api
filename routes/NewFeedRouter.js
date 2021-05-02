@@ -47,7 +47,7 @@ Router.post('/add/',async(req,res)=>{
         let {content}= req.body
         let newTus = new Newfeed({
             content:content,
-            user:{id:req.user.id,user_name:req.user.user,avatar:req.user.avatar},
+            user:{id:req.user.id,user_name:req.user.user_name,avatar:req.user.avatar},
             likecount: 0,
             commentcount:0
         })
