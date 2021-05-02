@@ -107,7 +107,7 @@ app.get('/auth/google/callback',
 app.use('/role',RoleRouter)
 app.use('/notification',NotificationrRouter)
 app.use('/account',AccountRouter)
-// app.use('/role',AddRole)
+app.use('/roleadd',AddRole)
 app.use('/admin',CheckLogin,CheckAdmin,AdminRouter)
 app.use('/newfeed',CheckLogin,NewFeedRouter)
 app.use('/api',apigoogle)
