@@ -28,7 +28,7 @@ Router.post('/googlelogin',(req,res)=>{
             AccountModel.findOne({user:email}).exec((err,user)=>{
                 if(err){
                     return res.status(400).json({
-                        code:2,message:"Something went wrong..."
+                        code:2,message:err
                     })
                 } else{
                     
@@ -53,7 +53,7 @@ Router.post('/googlelogin',(req,res)=>{
                         newAccount.save((err,data)=>{
                             if(err){
                                 return res.status(400).json({
-                                    code:2,message:"Something went wrong..."
+                                    code:2,message:err
                                 })
                             }
                             const {JWT_SECRET} = process.env
