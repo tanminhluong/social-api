@@ -35,19 +35,20 @@ Router.post('/googlelogin',(req,res)=>{
                     if(user){
                         const {JWT_SECRET} = process.env
                         const token = jwt.sign({
-                            id:account.id,
-                            user:account.user,
-                            user_name:account.user_name,
-                            avatar:account.avatar, 
-                            role:account.role,
-                            faculty:account.faculty
+                            id:user.id,
+                            user:user.user,
+                            user_name:user.user_name,
+                            avatar:user.avatar, 
+                            role:user.role,
+                            faculty:user.faculty
                         },JWT_SECRET,{expiresIn:"3h"})
                         res.json({code:0,message:"Đăng nhập thành công",token:token})
                     }else{
                         let newAccount = new AccountModel({
-                            name:name,
-                            email:email,
-                            avatar:picture
+                            user:email,
+                            user_name:name,
+                            avatar:picture,
+                            role:"student"
                         })
                         newAccount.save((err,data)=>{
                             if(err){
@@ -57,12 +58,12 @@ Router.post('/googlelogin',(req,res)=>{
                             }
                             const {JWT_SECRET} = process.env
                             const token = jwt.sign({
-                                id:account.id,
-                                user:account.user,
-                                user_name:account.user_name,
-                                avatar:account.avatar, 
-                                role:account.role,
-                                faculty:account.faculty
+                                id:user.id,
+                            user:user.user,
+                            user_name:user.user_name,
+                            avatar:user.avatar, 
+                            role:user.role,
+                            faculty:user.faculty
                             },JWT_SECRET,{expiresIn:"3d"})
                             res.json({code:0,message:"Đăng nhập thành công",token:token})
                         })
