@@ -54,8 +54,7 @@ Router.post('/add/',async(req,res)=>{
         await newTus.save()
         return res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
     }catch(err){
-        console.log(err)
-        return res.json({code:2,message:err})
+        return res.json({code:1,message:err})
     }
 })
 
@@ -78,8 +77,7 @@ Router.post('/add/image',upload.single('image'),async(req,res)=>{
         await newTus.save()
         res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
     }catch(err){
-        console.log(err)
-        res.json({code:2,message:err})
+        res.json({code:1,message:err})
     }
 })
 
