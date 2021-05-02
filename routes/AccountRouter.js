@@ -54,10 +54,12 @@ Router.post('/login',loginValidator,(req,res)=>{
             }
             const {JWT_SECRET} = process.env
             jwt.sign({
+                id:account.id,
                 user:account.user,
+                avatar:account.avatar, 
                 role:account.role
             },JWT_SECRET,{
-                expiresIn:'1h'
+                expiresIn:'3h'
             },(err,token)=>{
                 if(err) throw err
                 return res.json({
@@ -82,69 +84,13 @@ Router.post('/login',loginValidator,(req,res)=>{
 })
 
 
+
 Router.get("/current",CheckLogin,(req,res)=>{
     res.json({
         code:0,
         message: 'lấy dữ liệu phiên đăng nhập thành công',
         data:req.user
     })
-})
-// Router.post('/register',registerValidator,(req,res)=>{
-    
-//     let result = validationResult(req)
-//     if(result.errors.length === 0 ){
-
-//         let {email,password,fullname}= req.body
-//         Account.findOne({email:email})
-//         .then(acc=>{
-//             if (acc){
-//                 throw new Error("Tài khoản đã tồn tại")
-//             }
-//         })
-//         .then(()=>bcrypt.hash(password,10))
-//         .then(hashed => {
-//             let user = new Account({
-//                 email:email, 
-//                 password: hashed,
-//                 fullname:fullname,
-//                 role:"student"
-//             })
-//             return user.save()
-//         })
-//         .then(()=>{
-//             return res.json({code:0,message:'Đăng ký thành công'})    
-//         })
-//         .catch(e=>{
-//             return res.json({code:2,message:"Đăng ký thất bại:"+ e.message})
-//         })
-        
-//     }
-//     else{
-//         let messages = result.mapped()
-//         let message = ''
-//         for(m in messages){
-//             message= messages[m].msg
-//             break
-//         }
-//         return res.json({code:1,message:message})
-//     }
-// })
-
-Router.post("/update/avatar",(req,res)=>{ 
-    let uploader = upload.single('image')    
-    uploader(req,res,err =>{
-        let {newname,email} = req.body
-        let image = req.file
-        if(err){
-            res.end('image too large')
-        }else if(!image){
-            res.end("file k ddc chap nhan")
-        }else {
-            fs.renameSync(image.path,`uploads/${image.originalname}`)
-            res.end('abc')
-        }
-    })
-
 })
 
 module.exports = Router

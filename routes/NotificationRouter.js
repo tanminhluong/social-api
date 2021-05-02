@@ -7,8 +7,7 @@ const NotificationValidator = require('./validators/NotificationValidator')
 const PageValidator = require('./validators/NotificationPageValidator')
 const endOfDay=  require('date-fns/endOfDay')
 const startOfDay = require('date-fns/startOfDay') 
-const {Server} = require('socket.io')
-const io = new Server()
+
 
 Router.get('/page/:page',PageValidator,(req,res)=>{
     let result = validationResult(req)

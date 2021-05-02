@@ -7,7 +7,6 @@ const io = new Server()
 
 const Newfeed = require('../models/NewFeedModel')
 const {validationResult} = require('express-validator')
-const CheckLogin = require('../auth/CheckLogin')
 const NewFeedValidator = require('./validators/addNewfeed')
 
 const endOfDay=  require('date-fns/endOfDay')
@@ -16,7 +15,7 @@ const {cloudinary} = require('../configCloud/Cloudinary')
 const upload = require('../configCloud/multer')
 
 Router.get('/',(req,res)=>{
-    Newfeed.find()
+    Newfeed.find().sort({'date': 'desc'})
     .then(Newfeeds =>{
         res.json({
             code:0,
@@ -26,16 +25,49 @@ Router.get('/',(req,res)=>{
     })
 })
 
-Router.post('/add',NewFeedValidator,upload.single('image'),async(req,res)=>{
+Router.put('/like/:idtus',async(req,res)=>{
+    try{
+        let {id,user} = req.user
+        let idtus = req.params.idtus
+        let updateLike = await Newfeed.findByIdAndUpdate(idtus,{$inc:{likecount:1}},{useFindAndModify:false})
+        updateLike.likelist.push({id_user:id,user_name:user})
+        await updateLike.save()
+        
+        // let test = await Newfeed.find({_id:idtus},'likelist')
+        // console.log(test)
+        // console.log(updateLike.likelist.includes("607e803329744743e4d6df30"))
+        return res.json({code:0,message:'Like bài đăng thành công'})
+    }catch (err){
+        return res.json({code:2,message:err})
+    }
+})
+
+Router.post('/add/',async(req,res)=>{
+    try{
+        let {content}= req.body
+        let newTus = new Newfeed({
+            content:content,
+            user:{id:req.user.id,user_name:req.user.user,avatar:req.user.avatar},
+            likecount: 0,
+            commentcount:0
+        })
+        await newTus.save()
+        return res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
+    }catch(err){
+        return res.json({code:2,message:err})
+    }
+})
+
+Router.post('/add/image',NewFeedValidator,upload.single('image'),async(req,res)=>{
     try{
         let result = validationResult(req)
         if(result.errors.length ===0){
             let {content}= req.body
-            let userCurrent = req.user.user
+            // let userCurrent = json({id:req.user.id,user:req.user.user})
             const imageCloud = await cloudinary.uploader.upload(req.file.path)
             let newTus = new Newfeed({
                 content:content,
-                user:userCurrent,
+                user:{id:req.user.id,user_name:req.user.user},
                 likecount: 0,
                 image:imageCloud.secure_url,
                 idimage:imageCloud.public_id,
@@ -69,42 +101,5 @@ Router.delete("/delete/:id",async(req,res)=>{
         return res.json({code:1,message:'Không tìm thấy bài đăng'})
     }
 })
-
-
-// Router.post('/add',NewFeedValidator,upload.single('image'),(req,res)=>{
-//     let result = validationResult(req)
-//     if(result.errors.length ===0){
-//         let {content}= req.body
-//         let userCurrent = req.user.user
-//         const imageCloud = cloudinary.uploader.upload(req.file.path)
-//         then(()=>{
-//             let newTus = new Newfeed({
-//                 content:content,
-//                 user:userCurrent,
-//                 likecount: 0,
-//                 image:imageCloud.secure_url,
-//                 idimage:imageCloud.public_id,
-//                 commentcount:0
-//             })
-//             newTus.save()
-//         })
-//         .then(()=>{
-//             return res.json({code:0,message:'Tạo bài đăng thành công'})    
-//         })
-//         .catch(e=>{
-//             return res.json({code:2,message:"Tạo bài đăng thất bại:"+ e.message})
-//         })     
-//     }
-//     else{
-//         let messages = result.mapped()
-//         let message = ''
-//         for(m in messages){
-//             message= messages[m].msg
-//             break
-//         }
-//         return res.json({code:1,message:message})
-//     }
-// })
-
 
 module.exports = Router

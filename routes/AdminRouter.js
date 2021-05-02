@@ -67,6 +67,7 @@ Router.post('/adduser',addfacultyValidator,(req,res)=>{
         .then(hashed =>{
             let userFaculty = new FacultyAccount({
                 user:user,
+                avatar:"https://res.cloudinary.com/tdtimg/image/upload/v1619852102/wuib8yglnihou4zycrho.jpg",
                 password:hashed,
                 role:role
             })

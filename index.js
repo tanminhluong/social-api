@@ -14,6 +14,8 @@ const AccountRouter = require('./routes/AccountRouter')
 const AdminRouter = require('./routes/AdminRouter')
 const NewFeedRouter = require('./routes/NewFeedRouter')
 // const AddRole = require('./routes/AddRole')
+const apigoogle = require('./routes/apigoogle')
+
 app.use(cors())
 app.use(passport.initialize())
 
@@ -108,6 +110,7 @@ app.use('/account',AccountRouter)
 // app.use('/role',AddRole)
 app.use('/admin',CheckLogin,CheckAdmin,AdminRouter)
 app.use('/newfeed',CheckLogin,NewFeedRouter)
+app.use('/api',apigoogle)
 mongoose.connect('mongodb://localhost/FPJ',{
     useNewUrlParser:true,
     useUnifiedTopology:true

@@ -5,11 +5,11 @@ const NewFeedSchema = new Schema({
     content:String,
     image:String,
     idimage:String,
-    user:Array,
+    user:Object,
     likecount:Number,
-    likelist:Array,
+    likelist:[Object],
     commentcount:Number,
-    commentlist:Array,
+    commentlist:[Object],
     linkyoutube:String,
     date:{type: Date, default: Date.now}
 })
