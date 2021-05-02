@@ -62,6 +62,7 @@ Router.post('/add/',async(req,res)=>{
 Router.post('/add/image',upload.single('image'),async(req,res)=>{
     try{
         let {content}= req.body
+        
         const imageCloud = await cloudinary.uploader.upload(req.file.path)
         let newTus = new Newfeed({
             content:content,
