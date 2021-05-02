@@ -52,9 +52,10 @@ Router.post('/add/',async(req,res)=>{
             commentcount:0
         })
         await newTus.save()
-        return res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
     }catch(err){
         return res.json({code:1,message:err})
+    }finally{
+        res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
     }
 })
 
@@ -75,9 +76,10 @@ Router.post('/add/image',upload.single('image'),async(req,res)=>{
             commentcount:0
         })
         await newTus.save()
-        res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
     }catch(err){
         res.json({code:1,message:err})
+    }finally{
+        res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
     }
 })
 
