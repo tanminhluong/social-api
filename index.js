@@ -108,7 +108,7 @@ app.use('/role',RoleRouter)
 app.use('/notification',NotificationrRouter)
 app.use('/account',AccountRouter)
 app.use('/roleadd',AddRole)
-app.use('/admin',CheckLogin,CheckAdmin,AdminRouter)
+app.use('/admin',AdminRouter)
 app.use('/newfeed',CheckLogin,NewFeedRouter)
 app.use('/api',apigoogle)
 

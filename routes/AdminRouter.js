@@ -4,23 +4,13 @@ const {validationResult} = require('express-validator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const multer = require('multer')
-const fs = require('fs')
 
-const upload = multer({dest:'uploads',fileFilter:(req,file,callback)=>{
-    console.log(file)
-    if(file.mimetype.startsWith('image/')){
-        callback(null,true)
-    }else{
-        callback(null,false)
-    }
-},limits:{fileSize:500000}})
-
-const FacultyAccount= require('../models/FacultyAccount')
+const AccountModel= require('../models/AccountModel')
 const addfacultyValidator = require('./validators/addfacultyValidator')
 
 
 Router.get('/user',(req,res)=>{
-    FacultyAccount.find()
+    AccountModel.find({role:"user"})
     .then(FacultyAccounts =>{
         res.json({
             code:0,
@@ -36,7 +26,7 @@ Router.get('/user/:id',(req,res)=>{
         return res.json({code:1,message:"Không có thông tin user"})
     }
 
-    FacultyAccount.findById(id)
+    AccountModel.findById(id)
     .then(a=>{
         if(a){
             return res.json({code:0,message:"Đã tìm thấy tài khoản user",data:a})
@@ -57,19 +47,21 @@ Router.post('/adduser',addfacultyValidator,(req,res)=>{
     let result = validationResult(req)
     if(result.errors.length ===0){
         let {user,password,role}= req.body
-        FacultyAccount.findOne({user:user})
+        AccountModel.findOne({user:user})
         .then(acc=>{
             if(acc){
-                throw new Error("Khoa đã được tạo") 
+                throw new Error("Tài khoản đã được tạo") 
             }
         })
         .then(()=>bcrypt.hash(password,10))
         .then(hashed =>{
             let userFaculty = new FacultyAccount({
                 user:user,
+                user_name:"Tài khoản quản lý",
                 avatar:"https://res.cloudinary.com/tdtimg/image/upload/v1619852102/wuib8yglnihou4zycrho.jpg",
                 password:hashed,
-                role:role
+                role:"user",
+                faculty:role
             })
             userFaculty.save()
         })
@@ -99,7 +91,7 @@ Router.delete('/user/:id',(req,res)=>{
         return res.json({code:1,message:"Không có thông tin user"})
     }
 
-    FacultyAccount.findByIdAndDelete(id)
+    AccountModel.findByIdAndDelete(id)
     .then(a=>{
         if(a){
             return res.json({code:0,message:"Đã xóa tài khoản user",data:a})
@@ -122,7 +114,7 @@ Router.put("/user/:id",(req,res)=>{
         return res.json({code:1,message:"Không có thông tin user"})
     }
 
-    let supportedFields = ['password','Role']
+    let supportedFields = ['password','faculty']
     let updateData = req.body
 
     for (field in updateData){
@@ -135,7 +127,7 @@ Router.put("/user/:id",(req,res)=>{
         return res.json({code:2,message:"Không có dữ có dữ liệu cần cập nhật"})
     }
 
-    FacultyAccount.findByIdAndUpdate(id, updateData,{new:true})
+    AccountModel.findByIdAndUpdate(id, updateData,{new:true})
     .then(a=>{
         if(a){
             return res.json({code:0,message:"Đã cập nhật tài khoản user",data:a})

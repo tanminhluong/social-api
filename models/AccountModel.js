@@ -2,12 +2,17 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const AccountSchema = new Schema({
-    email:{
+    user:{
         type:String,
         unique: true
     },
-    fullname:String,
+    user_name:String,
+    birth:String,
+    gender:String,
+    phone:String,
+    avatar:String,
+    password: String,
     role:String,
+    faculty:String,
 })
-
 module.exports = mongoose.model('Account',AccountSchema)

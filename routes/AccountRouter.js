@@ -3,28 +3,9 @@ const Router = express.Router()
 const {validationResult} = require('express-validator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const fs = require('fs')
-const {cloudinary} = require('../configCloud/Cloudinary')
-const upload = require('../configCloud/multer')
-
-// Router.use(express.json({limit:'50mb'}))
-
-// const upload = multer({dest:'uploads',fileFilter:(req,file,callback)=>{
-//     console.log(file)
-//     if(file.mimetype.startsWith('image/')){
-//         callback(null,true)
-//     }else{
-//         callback(null,false)
-//     }
-// },limits:{fileSize:500000}})
 
 const CheckLogin = require('../auth/CheckLogin')
-const FacultyAccount= require('../models/FacultyAccount')
-
-const CheckAdmin = require('../middleware/CheckAdmin')
-
-const addfacultyValidator = require('./validators/addfacultyValidator')
-const registerValidator = require('./validators/registerValidators')
+const AccountModel= require('../models/AccountModel')
 const loginValidator = require('./validators/LoginValidator')
 
 Router.get('/',(req,res)=>{
@@ -40,7 +21,7 @@ Router.post('/login',loginValidator,(req,res)=>{
     let account = undefined
     if(result.errors.length === 0){
         let {user,password}= req.body
-        FacultyAccount.findOne({user:user})
+        AccountModel.findOne({user:user})
         .then(acc=>{
             if (!acc){
                 throw new Error("Tài khoản không tồn tại")
@@ -56,8 +37,10 @@ Router.post('/login',loginValidator,(req,res)=>{
             jwt.sign({
                 id:account.id,
                 user:account.user,
+                user_name:account.user_name,
                 avatar:account.avatar, 
-                role:account.role
+                role:account.role,
+                faculty:account.faculty
             },JWT_SECRET,{
                 expiresIn:'3h'
             },(err,token)=>{
