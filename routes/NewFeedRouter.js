@@ -67,7 +67,7 @@ Router.post('/add/image',NewFeedValidator,upload.single('image'),async(req,res)=
             const imageCloud = await cloudinary.uploader.upload(req.file.path)
             let newTus = new Newfeed({
                 content:content,
-                user:{id:req.user.id,user_name:req.user.user_names},
+                user:{id:req.user.id,user_name:req.user.user_name},
                 likecount: 0,
                 image:imageCloud.secure_url,
                 idimage:imageCloud.public_id,
