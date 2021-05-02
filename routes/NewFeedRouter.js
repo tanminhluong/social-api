@@ -76,10 +76,10 @@ Router.post('/add/image',upload.single('image'),async(req,res)=>{
             commentcount:0
         })
         await newTus.save()
-        return res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
+        res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
     }catch(err){
         console.log(err)
-        return res.json({code:2,message:err})
+        res.json({code:2,message:err})
     }
 })
 
@@ -90,9 +90,9 @@ Router.delete("/delete/:id",async(req,res)=>{
         if(tus.idimage)
             await cloudinary.uploader.destroy(tus.idimage)
         await tus.remove()
-        return res.json({code:0,message:'Xóa bài đăng thành công'})
+        res.json({code:0,message:'Xóa bài đăng thành công'})
     }catch(err){
-        return res.json({code:1,message:'Không tìm thấy bài đăng'})
+        res.json({code:1,message:'Không tìm thấy bài đăng'})
     }
 })
 
