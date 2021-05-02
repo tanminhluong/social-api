@@ -13,7 +13,7 @@ const NotificationrRouter = require('./routes/NotificationRouter')
 const AccountRouter = require('./routes/AccountRouter')
 const AdminRouter = require('./routes/AdminRouter')
 const NewFeedRouter = require('./routes/NewFeedRouter')
-// const AddRole = require('./routes/AddRole')
+const AddRole = require('./routes/AddRole')
 const apigoogle = require('./routes/apigoogle')
 
 app.use(cors())
