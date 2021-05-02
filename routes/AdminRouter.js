@@ -55,7 +55,7 @@ Router.post('/adduser',addfacultyValidator,(req,res)=>{
         })
         .then(()=>bcrypt.hash(password,10))
         .then(hashed =>{
-            let userFaculty = new FacultyAccount({
+            let userFaculty = new AccountModel({
                 user:user,
                 user_name:"Tài khoản quản lý",
                 avatar:"https://res.cloudinary.com/tdtimg/image/upload/v1619852102/wuib8yglnihou4zycrho.jpg",
