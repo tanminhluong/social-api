@@ -54,28 +54,31 @@ Router.post('/add/',async(req,res)=>{
         await newTus.save()
         return res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
     }catch(err){
+        console.log(err)
         return res.json({code:2,message:err})
     }
 })
 
 Router.post('/add/image',upload.single('image'),async(req,res)=>{
     try{
-            let {content}= req.body
-            const imageCloud = await cloudinary.uploader.upload(req.file.path)
-            let newTus = new Newfeed({
-                content:content,
-                user:{
-                    id:req.user.id,
-                    user_name:req.user.user_name
-                },
-                likecount: 0,
-                image:imageCloud.secure_url,
-                idimage:imageCloud.public_id,
-                commentcount:0
-            })
-            await newTus.save()
-            return res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
+        let {content}= req.body
+        const imageCloud = await cloudinary.uploader.upload(req.file.path)
+        let newTus = new Newfeed({
+            content:content,
+            user:{
+                id:req.user.id,
+                user_name:req.user.user_name,
+                avatar:req.user.avatar
+            },
+            likecount: 0,
+            image:imageCloud.secure_url,
+            idimage:imageCloud.public_id,
+            commentcount:0
+        })
+        await newTus.save()
+        return res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
     }catch(err){
+        console.log(err)
         return res.json({code:2,message:err})
     }
 })
