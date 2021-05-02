@@ -111,7 +111,11 @@ app.use('/account',AccountRouter)
 app.use('/admin',CheckLogin,CheckAdmin,AdminRouter)
 app.use('/newfeed',CheckLogin,NewFeedRouter)
 app.use('/api',apigoogle)
-mongoose.connect('mongodb://localhost/FPJ',{
+
+// mongodb+srv://adminPDA:<password>@cluster0.v9bnw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+// adminPDA
+// mn2jHpinkZEvtYi
+mongoose.connect('mongodb+srv://adminPDA:mn2jHpinkZEvtYi@cluster0.v9bnw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority/Tdtu-api',{
     useNewUrlParser:true,
     useUnifiedTopology:true
 })
