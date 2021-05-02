@@ -27,10 +27,10 @@ Router.get('/',(req,res)=>{
 
 Router.put('/like/:idtus',async(req,res)=>{
     try{
-        let {id,user} = req.user
+        let {id,user_name} = req.user
         let idtus = req.params.idtus
         let updateLike = await Newfeed.findByIdAndUpdate(idtus,{$inc:{likecount:1}},{useFindAndModify:false})
-        updateLike.likelist.push({id_user:id,user_name:user})
+        updateLike.likelist.push({id_user:id,user_name:user_name})
         await updateLike.save()
         
         // let test = await Newfeed.find({_id:idtus},'likelist')
@@ -67,7 +67,7 @@ Router.post('/add/image',NewFeedValidator,upload.single('image'),async(req,res)=
             const imageCloud = await cloudinary.uploader.upload(req.file.path)
             let newTus = new Newfeed({
                 content:content,
-                user:{id:req.user.id,user_name:req.user.user},
+                user:{id:req.user.id,user_name:req.user.user_names},
                 likecount: 0,
                 image:imageCloud.secure_url,
                 idimage:imageCloud.public_id,
