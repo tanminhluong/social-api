@@ -7,11 +7,11 @@ const client = new OAuth2Client("173768816222-a3th16lqbckuej5epilhsnv3tg0l031q.a
 
 Router.get('/',(req,res)=>{
     StudentModel.find()
-    .then(Roles =>{
+    .then(users =>{
         res.json({
             code:0,
             message: 'Đọc danh sách sinh viên thành công',
-            data:Roles
+            data:users
         })
     })
     
