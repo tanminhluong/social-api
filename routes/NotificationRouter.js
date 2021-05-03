@@ -62,12 +62,35 @@ Router.get('/page/:page',PageValidator,(req,res)=>{
 })
 
 
-Router.get('/search/:title/:role/:sod/:eod',(req,res)=>{
+Router.get('/search/:title/:role/:sod/:eod/page',(req,res)=>{
     let {title,role,sod,eod} = req.params
-    Notification.find({title:{"$regex":title,"$options":"i"},role:role,date: {
-        $gte: startOfDay(new Date(sod)), 
-        $lte: endOfDay(new Date(eod)) 
-    }}).sort({'date': 'desc'})
+    let notiLength = undefined
+    let {page} = req.params
+    let pageInt = parseInt(page)
+    let pageSkip = undefined
+
+    Notification.find()
+    .then(Noti=>{
+        notiLength = Noti.length 
+        
+        if(Math.ceil(notiLength/10)<pageInt){
+            return res.json({code:1, message:"Chưa có trang thông báo này"})
+        }   
+    })
+    .then(()=>{
+        if(pageInt===1){
+            pageSkip = 0
+        }else{
+            pageSkip = (pageInt-1)*10
+        }
+        return pageSkip
+    })
+    then(pageSkip=>{
+        Notification.find({title:{"$regex":title,"$options":"i"},role:role,date: {
+            $gte: startOfDay(new Date(sod)), 
+            $lte: endOfDay(new Date(eod)) 
+        }}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+    })
     .then(Noti=>{
         res.json({
             code:0,
