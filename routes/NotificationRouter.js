@@ -188,7 +188,7 @@ Router.post('/add',CheckLogin,NotificationValidator,(req,res)=>{
     if(result.errors.length ===0){
         let {content,title,role,description}= req.body
         let userCurrent = req.user.user
-        let roleCurrent = req.user.role
+        let roleCurrent = req.user.faculty
         
         if(roleCurrent.includes(role)==false){
             return res.json({code:2,message:"Tài khoản không được cấp quyền của Role này"}) 
