@@ -8,6 +8,27 @@ const PageValidator = require('./validators/NotificationPageValidator')
 const endOfDay=  require('date-fns/endOfDay')
 const startOfDay = require('date-fns/startOfDay') 
 
+Router.get('/:id',(req,res)=>{
+    let {id} = req.params
+    if(!id){
+        return res.json({code:1,message:"Không có thông tin user"})
+    }
+    Notification.findById(id)
+    .then(a=>{
+        if(a){
+            return res.json({code:0,message:"Đã tìm thấy thông báo",data:a})
+
+        }else{
+            return res.json({code:2,message:"Không tìm thấy thông báo"})
+        }
+    })
+    .catch(e=>{
+        if(e.message.includes('Cast to Object failed')){
+            return res.json({code:3,message:"Đây không phải id hợp lệ"})
+        }
+        return res.json({code:3,message:e.message})
+    })
+})
 
 Router.get('/page/:page',PageValidator,(req,res)=>{
     let result = validationResult(req)
