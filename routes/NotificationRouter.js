@@ -95,6 +95,7 @@ Router.get('/search/:title/:role/:sod/:eod/page',(req,res)=>{
         res.json({
             code:0,
             message:"Đọc danh sách thông báo search thành công",
+            total:(Math.ceil(notiLength/10)),
             data:Noti
         })         
     })
@@ -105,14 +106,38 @@ Router.get('/search/:title/:role/:sod/:eod/page',(req,res)=>{
 
 Router.get('/title-date/:title/:sod/:eod/page',(req,res)=>{
     let {title,sod,eod} = req.params
-    Notification.find({title:{"$regex":title,"$options":"i"},date: {
-        $gte: startOfDay(new Date(sod)), 
-        $lte: endOfDay(new Date(eod)) 
-    }}).sort({'date': 'desc'})
+    let notiLength = undefined
+    let {page} = req.params
+    let pageInt = parseInt(page)
+    let pageSkip = undefined
+
+    Notification.find()
+    .then(Noti=>{
+        notiLength = Noti.length 
+        
+        if(Math.ceil(notiLength/10)<pageInt){
+            return res.json({code:1, message:"Chưa có trang thông báo này"})
+        }   
+    })
+    .then(()=>{
+        if(pageInt===1){
+            pageSkip = 0
+        }else{
+            pageSkip = (pageInt-1)*10
+        }
+        return pageSkip
+    })
+    then(pageSkip=>{
+        Notification.find({title:{"$regex":title,"$options":"i"},role:role,date: {
+            $gte: startOfDay(new Date(sod)), 
+            $lte: endOfDay(new Date(eod)) 
+        }}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+    })
     .then(Noti=>{
         res.json({
             code:0,
             message:"Đọc danh sách thông báo search thành công",
+            total:(Math.ceil(notiLength/10)),
             data:Noti
         })         
     })
@@ -154,6 +179,7 @@ Router.get('/role-date/:role/:sod/:eod/page',(req,res)=>{
         res.json({
             code:0,
             message:"Đọc danh sách thông báo search thành công",
+            total:(Math.ceil(notiLength/10)),
             data:Noti
         })         
     })
@@ -192,6 +218,7 @@ Router.get('/search/:title/:role/page',(req,res)=>{
         res.json({
             code:0,
             message:"Đọc danh sách thông báo search thành công",
+            total:(Math.ceil(notiLength/10)),
             data:Noti
         })         
     })
@@ -230,6 +257,7 @@ Router.get('/search/:title/page',(req,res)=>{
         res.json({
             code:0,
             message:"Đọc danh sách thông báo search thành công",
+            total:(Math.ceil(notiLength/10)),
             data:Noti
         })         
     })
@@ -269,6 +297,7 @@ Router.get('/faculty/:role/page',(req,res)=>{
         res.json({
             code:0,
             message:"Đọc danh sách thông báo search thành công",
+            total:(Math.ceil(notiLength/10)),
             data:Noti
         })         
     })
@@ -314,6 +343,7 @@ Router.get('/dateSort/:sod/:eod/page',(req,res)=>{
         res.json({
             code:0,
             message:"Đọc danh sách thông báo search thành công",
+            total:(Math.ceil(notiLength/10)),
             data:Noti
         })         
     })
