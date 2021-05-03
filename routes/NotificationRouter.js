@@ -30,328 +30,299 @@ Router.get('/:id',(req,res)=>{
     })
 })
 
-Router.get('/page/:page',PageValidator,(req,res)=>{
-    let result = validationResult(req)
-    if(result.errors.length ===0){
-    
+Router.get('/page/:page',async(req,res)=>{
+    try{
         let notiLength = undefined
         let {page} = req.params
         let pageInt = parseInt(page)
         let pageSkip = undefined
-
-        Notification.find()
-        .then(Noti=>{
-            notiLength = Noti.length 
-            
-            if(Math.ceil(notiLength/10)<pageInt){
-                return res.json({code:1, message:"Chưa có trang thông báo này"})
-            }   
-        })
-        .then(()=>{
-            if(pageInt===1){
-                pageSkip = 0
-            }else{
-                pageSkip = (pageInt-1)*10
-            }
-            return pageSkip
-        })
-        .then(pageSkip=>{
-            Notification.find({}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
-            .then(Notifications =>{
-                res.json({
-                    code:0,
-                    message: 'Đọc danh sách thông báo thành công',
-                    total:(Math.ceil(notiLength/10)),
-                    data:Notifications
-                })
-            })
-        })
-        .catch(e=>{
-            return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
-        })
-
         
-    }else{
-        let messages = result.mapped()
-        let message = ''
-        for(m in messages){
-            message= messages[m].msg
-            break
+        notiall = await Notification.find()
+        
+        notiLength = notiall.length 
+        if(Math.ceil(notiLength/10)<pageInt){
+            return res.json({code:1, message:"Chưa có trang thông báo này"})
+        }   
+        
+        if(pageInt===1){
+            pageSkip = 0
+        }else{
+            pageSkip = (pageInt-1)*10
         }
-        return res.json({code:1,message:message})
+        
+        notilist = await Notification.find({}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+        return res.json({
+                code:0,
+                message:"Đọc danh sách thông báo search thành công",
+                total:(Math.ceil(notiLength/10)),
+                data:notilist
+        })         
+    }
+    catch(e){
+        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
     }
 })
 
 
-Router.get('/search/:title/:role/:sod/:eod/:page',(req,res)=>{
+
+Router.get('/search/:title/:role/:sod/:eod/:page',async(req,res)=>{
+    
+try{
     let {title,role,sod,eod} = req.params
     let notiLength = undefined
     let {page} = req.params
     let pageInt = parseInt(page)
     let pageSkip = undefined
+    
+    notiall = await Notification.find({title:{"$regex":title,"$options":"i"},role:role,date: {
+        $gte: startOfDay(new Date(sod)), 
+        $lte: endOfDay(new Date(eod)) 
+    }})
+    
+    notiLength = notiall.length 
+    if(Math.ceil(notiLength/10)<pageInt){
+        return res.json({code:1, message:"Chưa có trang thông báo này"})
+    }   
+    
+    if(pageInt===1){
+        pageSkip = 0
+    }else{
+        pageSkip = (pageInt-1)*10
+    }
+    
+    notilist = await Notification.find({title:{"$regex":title,"$options":"i"},role:role,date: {
+                                        $gte: startOfDay(new Date(sod)), 
+                                        $lte: endOfDay(new Date(eod)) 
+                                        }}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+        return res.json({
+            code:0,
+            message:"Đọc danh sách thông báo search thành công",
+            total:(Math.ceil(notiLength/10)),
+            data:notilist
+        })         
+    }
+    catch(e){
+        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
+    }
+})
 
-    Notification.find()
-    .then(Noti=>{
-        notiLength = Noti.length 
+
+Router.get('/title-date/:title/:sod/:eod/:page',async(req,res)=>{
+    try{
+        let {title,sod,eod} = req.params
+        let notiLength = undefined
+        let {page} = req.params
+        let pageInt = parseInt(page)
+        let pageSkip = undefined
+    
+        notiall = await Notification.find({title:{"$regex":title,"$options":"i"},date: {
+            $gte: startOfDay(new Date(sod)), 
+            $lte: endOfDay(new Date(eod)) 
+        }})
         
+        notiLength = notiall.length 
         if(Math.ceil(notiLength/10)<pageInt){
             return res.json({code:1, message:"Chưa có trang thông báo này"})
         }   
-    })
-    .then(()=>{
+        
         if(pageInt===1){
             pageSkip = 0
         }else{
             pageSkip = (pageInt-1)*10
         }
-        return pageSkip
-    })
-    then(pageSkip=>{
-        Notification.find({title:{"$regex":title,"$options":"i"},role:role,date: {
-            $gte: startOfDay(new Date(sod)), 
-            $lte: endOfDay(new Date(eod)) 
-        }}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
-    })
-    .then(Noti=>{
-        res.json({
-            code:0,
-            message:"Đọc danh sách thông báo search thành công",
-            total:(Math.ceil(notiLength/10)),
-            data:Noti
-        })         
-    })
-    .catch(e=>{
-        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
-    })
-})
-
-Router.get('/title-date/:title/:sod/:eod/:page',(req,res)=>{
-    let {title,sod,eod} = req.params
-    let notiLength = undefined
-    let {page} = req.params
-    let pageInt = parseInt(page)
-    let pageSkip = undefined
-
-    Notification.find()
-    .then(Noti=>{
-        notiLength = Noti.length 
         
-        if(Math.ceil(notiLength/10)<pageInt){
-            return res.json({code:1, message:"Chưa có trang thông báo này"})
-        }   
-    })
-    .then(()=>{
-        if(pageInt===1){
-            pageSkip = 0
-        }else{
-            pageSkip = (pageInt-1)*10
-        }
-        return pageSkip
-    })
-    then(pageSkip=>{
-        Notification.find({title:{"$regex":title,"$options":"i"},role:role,date: {
+        notilist = await Notification.find({title:{"$regex":title,"$options":"i"},date: {
             $gte: startOfDay(new Date(sod)), 
             $lte: endOfDay(new Date(eod)) 
         }}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
-    })
-    .then(Noti=>{
-        res.json({
-            code:0,
-            message:"Đọc danh sách thông báo search thành công",
-            total:(Math.ceil(notiLength/10)),
-            data:Noti
-        })         
-    })
-    .catch(e=>{
+        return res.json({
+                code:0,
+                message:"Đọc danh sách thông báo search thành công",
+                total:(Math.ceil(notiLength/10)),
+                data:notilist
+            })         
+        }
+    catch(e){
         return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
-    })
+    }
 })
 
-Router.get('/role-date/:role/:sod/:eod/:page',(req,res)=>{
+Router.get('/role-date/:role/:sod/:eod/:page',async(req,res)=>{
+    
+try{
     let {role,sod,eod} = req.params
     let notiLength = undefined
     let {page} = req.params
     let pageInt = parseInt(page)
     let pageSkip = undefined
 
-    Notification.find()
-    .then(Noti=>{
-        notiLength = Noti.length 
+    notiall = await Notification.find({role:role,date: {
+        $gte: startOfDay(new Date(sod)), 
+        $lte: endOfDay(new Date(eod)) 
+    }})
+    
+    notiLength = notiall.length 
+    if(Math.ceil(notiLength/10)<pageInt){
+        return res.json({code:1, message:"Chưa có trang thông báo này"})
+    }   
+    
+    if(pageInt===1){
+        pageSkip = 0
+    }else{
+        pageSkip = (pageInt-1)*10
+    }
+    
+    notilist = await Notification.find({role:role,date: {
+        $gte: startOfDay(new Date(sod)), 
+        $lte: endOfDay(new Date(eod)) 
+    }}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+    return res.json({
+            code:0,
+            message:"Đọc danh sách thông báo search thành công",
+            total:(Math.ceil(notiLength/10)),
+            data:notilist
+        })         
+    }
+    catch(e){
+        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
+    }
+
+})
+
+Router.get('/search/:title/:role/:page',async(req,res)=>{
+    try{
+        let {title,role} = req.params
+        let notiLength = undefined
+        let {page} = req.params
+        let pageInt = parseInt(page)
+        let pageSkip = undefined
+    
+        notiall = await Notification.find({title:{"$regex":title,"$options":"i"},role:role})
         
+        notiLength = notiall.length 
         if(Math.ceil(notiLength/10)<pageInt){
             return res.json({code:1, message:"Chưa có trang thông báo này"})
         }   
-    })
-    .then(()=>{
+        
         if(pageInt===1){
             pageSkip = 0
         }else{
             pageSkip = (pageInt-1)*10
         }
-        return pageSkip
-    })
-    then(pageSkip=>{
-        Notification.find({role:role,date: {
-            $gte: startOfDay(new Date(sod)), 
-            $lte: endOfDay(new Date(eod)) 
-        }}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
-    })
-    .then(Noti=>{
-        res.json({
-            code:0,
-            message:"Đọc danh sách thông báo search thành công",
-            total:(Math.ceil(notiLength/10)),
-            data:Noti
-        })         
-    })
-    .catch(e=>{
-        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
-    })
-})
-
-Router.get('/search/:title/:role/:page',(req,res)=>{
-    let {title,role} = req.params
-    let notiLength = undefined
-    let {page} = req.params
-    let pageInt = parseInt(page)
-    let pageSkip = undefined
-
-    Notification.find()
-    .then(Noti=>{
-        notiLength = Noti.length 
         
-        if(Math.ceil(notiLength/10)<pageInt){
-            return res.json({code:1, message:"Chưa có trang thông báo này"})
-        }   
-    })
-    .then(()=>{
-        if(pageInt===1){
-            pageSkip = 0
-        }else{
-            pageSkip = (pageInt-1)*10
+        notilist = await Notification.find({title:{"$regex":title,"$options":"i"},role:role}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+        return res.json({
+                code:0,
+                message:"Đọc danh sách thông báo search thành công",
+                total:(Math.ceil(notiLength/10)),
+                data:notilist
+            })         
         }
-        return pageSkip
-    })
-    then(pageSkip=>{
-        Notification.find({title:{"$regex":title,"$options":"i"},role:role}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
-    })
-    .then(Noti=>{
-        res.json({
-            code:0,
-            message:"Đọc danh sách thông báo search thành công",
-            total:(Math.ceil(notiLength/10)),
-            data:Noti
-        })         
-    })
-    .catch(e=>{
+    catch(e){
         return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
-    })
+    }
 })
 
-Router.get('/search/:title/:page',(req,res)=>{
+Router.get('/search/:title/:page',async(req,res)=>{
+    try{
     let {title} = req.params
     let notiLength = undefined
     let {page} = req.params
     let pageInt = parseInt(page)
     let pageSkip = undefined
 
-    Notification.find()
-    .then(Noti=>{
-        notiLength = Noti.length 
-        
-        if(Math.ceil(notiLength/10)<pageInt){
-            return res.json({code:1, message:"Chưa có trang thông báo này"})
-        }   
-    })
-    .then(()=>{
-        if(pageInt===1){
-            pageSkip = 0
-        }else{
-            pageSkip = (pageInt-1)*10
-        }
-        return pageSkip
-    })
-    then(pageSkip=>{
-        Notification.find({title:{"$regex":title,"$options":"i"}}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
-    })
-    .then(Noti=>{
-        res.json({
+    notiall = await Notification.find({title:{"$regex":title,"$options":"i"}})
+    
+    notiLength = notiall.length 
+    if(Math.ceil(notiLength/10)<pageInt){
+        return res.json({code:1, message:"Chưa có trang thông báo này"})
+    }   
+    
+    if(pageInt===1){
+        pageSkip = 0
+    }else{
+        pageSkip = (pageInt-1)*10
+    }
+    
+    notilist = await Notification.find({title:{"$regex":title,"$options":"i"}}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+    return res.json({
             code:0,
             message:"Đọc danh sách thông báo search thành công",
             total:(Math.ceil(notiLength/10)),
-            data:Noti
+            data:notilist
         })         
-    })
-    .catch(e=>{
+    }
+    catch(e){
         return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
-    })
+    }
 })
 
 
-Router.get('/faculty/:role/:page',(req,res)=>{
-    let {role} = req.params
-    let notiLength = undefined
-    let {page} = req.params
-    let pageInt = parseInt(page)
-    let pageSkip = undefined
 
-    Notification.find()
-    .then(Noti=>{
-        notiLength = Noti.length 
+
+Router.get('/faculty/:role/:page',async(req,res)=>{
+    try{
+        let {role} = req.params
+        let notiLength = undefined
+        let {page} = req.params
+        let pageInt = parseInt(page)
+        let pageSkip = undefined
+    
+        notiall = await Notification.find({role:role})
         
+        notiLength = notiall.length 
         if(Math.ceil(notiLength/10)<pageInt){
             return res.json({code:1, message:"Chưa có trang thông báo này"})
         }   
-    })
-    .then(()=>{
+        
         if(pageInt===1){
             pageSkip = 0
         }else{
             pageSkip = (pageInt-1)*10
         }
-        return pageSkip
-    })
-    then(pageSkip=>{
-        Notification.find({role:role}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
-    }) 
-    .then(Noti=>{
-        res.json({
-            code:0,
-            message:"Đọc danh sách thông báo search thành công",
-            total:(Math.ceil(notiLength/10)),
-            data:Noti
-        })         
-    })
-    .catch(e=>{
+        
+        notilist = await Notification.find({role:role}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+        return res.json({
+                code:0,
+                message:"Đọc danh sách thông báo search thành công",
+                total:(Math.ceil(notiLength/10)),
+                data:notilist
+            })         
+        }
+    catch(e){
         return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
-    })
+    }
 })
 
-Router.get('/dateSort/:sod/:eod/:page',(req,res)=>{
-    let {sod,eod} = req.params
-    let notiLength = undefined
-    let {page} = req.params
-    let pageInt = parseInt(page)
-    let pageSkip = undefined
 
-    Notification.find()
-    .then(Noti=>{
-        notiLength = Noti.length 
+
+Router.get('/dateSort/:sod/:eod/:page',async(req,res)=>{
+    try{
+        let {sod,eod} = req.params
+        let notiLength = undefined
+        let {page} = req.params
+        let pageInt = parseInt(page)
+        let pageSkip = undefined
+        console.log(sod,eod)
+        notiall = await Notification.find({
+            date: {
+                $gte: startOfDay(new Date(sod)), 
+                $lte: endOfDay(new Date(eod)) 
+            }
+        })
         
+        notiLength = notiall.length 
         if(Math.ceil(notiLength/10)<pageInt){
             return res.json({code:1, message:"Chưa có trang thông báo này"})
         }   
-    })
-    .then(()=>{
+        
         if(pageInt===1){
             pageSkip = 0
         }else{
             pageSkip = (pageInt-1)*10
         }
-        return pageSkip
-    })
-    then(pageSkip=>{
-        Notification.find({
+        
+        notilist = await Notification.find({
             date: {
                 $gte: startOfDay(new Date(sod)), 
                 $lte: endOfDay(new Date(eod)) 
@@ -359,18 +330,16 @@ Router.get('/dateSort/:sod/:eod/:page',(req,res)=>{
         })
         .sort({'date': 'desc'})
         .limit(10).skip(parseInt(pageSkip))
-    })
-    .then(Noti=>{
-        res.json({
-            code:0,
-            message:"Đọc danh sách thông báo search thành công",
-            total:(Math.ceil(notiLength/10)),
-            data:Noti
-        })         
-    })
-    .catch(e=>{
+        return res.json({
+                code:0,
+                message:"Đọc danh sách thông báo search thành công",
+                total:(Math.ceil(notiLength/10)),
+                data:notilist
+            })         
+        }
+    catch(e){
         return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
-    })
+    }
 })
 
 Router.post('/add',CheckLogin,NotificationValidator,(req,res)=>{
