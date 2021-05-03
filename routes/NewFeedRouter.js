@@ -42,18 +42,16 @@ Router.put('/like/:idtus',async(req,res)=>{
     }
 })
 
-Router.post('/add/',async(req,res)=>{
+Router.post('/add',async(req,res)=>{
     try{
-        let {content}= req.body
-        if (!content){
-            throw new Error('không tìm thấy content')
-        }
+        let {content,linkyoutube}= req.body
     
         let newTus = new Newfeed({
             content:content,
             user:{id:req.user.id,user_name:req.user.user_name,avatar:req.user.avatar},
             likecount: 0,
-            commentcount:0
+            commentcount:0,
+            linkyoutube:linkyoutube
         })
         await newTus.save()
         res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
