@@ -64,7 +64,7 @@ Router.get('/page/:page',PageValidator,(req,res)=>{
 
 Router.get('/search/:title/:role/:sod/:eod',(req,res)=>{
     let {title,role,sod,eod} = req.params
-    Notification.find({title:{"$regex":title,"$options":"i"},role:role,date: {
+    Notification.find({title:{"$regex":title,"$options":"i"},faculty:role,date: {
         $gte: startOfDay(new Date(sod)), 
         $lte: endOfDay(new Date(eod)) 
     }}).sort({'date': 'desc'})
@@ -100,7 +100,7 @@ Router.get('/title-date/:title/:sod/:eod',(req,res)=>{
 
 Router.get('/role-date/:role/:sod/:eod',(req,res)=>{
     let {role,sod,eod} = req.params
-    Notification.find({role:role,date: {
+    Notification.find({faculty:role,date: {
         $gte: startOfDay(new Date(sod)), 
         $lte: endOfDay(new Date(eod)) 
     }}).sort({'date': 'desc'})
@@ -118,7 +118,7 @@ Router.get('/role-date/:role/:sod/:eod',(req,res)=>{
 
 Router.get('/search/:title/:role',(req,res)=>{
     let {title,role} = req.params
-    Notification.find({title:{"$regex":title,"$options":"i"},role:role}).sort({'date': 'desc'})
+    Notification.find({title:{"$regex":title,"$options":"i"},faculty:role}).sort({'date': 'desc'})
     .then(Noti=>{
         res.json({
             code:0,
@@ -149,7 +149,7 @@ Router.get('/search/:title',(req,res)=>{
 
 Router.get('/faculty/:role',(req,res)=>{
     let {role} = req.params 
-    Notification.find({role:role}).sort({'date': 'desc'})
+    Notification.find({faculty:role}).sort({'date': 'desc'})
     .then(Noti=>{
         res.json({
             code:0,
@@ -198,7 +198,7 @@ Router.post('/add',CheckLogin,NotificationValidator,(req,res)=>{
             title:title,
             content:content,
             description:description,
-            role:role,
+            faculty:role,
             user:userCurrent
         })
         newNotification.save()

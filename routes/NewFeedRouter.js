@@ -25,6 +25,19 @@ Router.get('/',(req,res)=>{
     })
 })
 
+Router.get('/:time',async(req,res)=>{
+    try{
+        let {time} = req.params
+        if(!parseInt(time)){
+            throw new Error ("Resquest không phải định dạng số")
+        }
+        let feeds = Newfeed.find()
+    }
+    catch(err){
+
+    }
+})
+
 Router.put('/like/:idtus',async(req,res)=>{
     try{
         let {id,user_name} = req.user
