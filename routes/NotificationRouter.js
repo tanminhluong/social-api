@@ -62,10 +62,10 @@ Router.get('/page/:page',PageValidator,(req,res)=>{
 })
 
 
-Router.get('/search/:title/:role/:sod/:eod/page',(req,res)=>{
+Router.get('/search/:title/:role/:sod/:eod/',(req,res)=>{
     let {title,role,sod,eod} = req.params
     let notiLength = undefined
-    let {page} = req.params
+    let {page} = req.body
     let pageInt = parseInt(page)
     let pageSkip = undefined
 
@@ -104,7 +104,7 @@ Router.get('/search/:title/:role/:sod/:eod/page',(req,res)=>{
     })
 })
 
-Router.get('/title-date/:title/:sod/:eod/page',(req,res)=>{
+Router.get('/title-date/:title/:sod/:eod/:page',(req,res)=>{
     let {title,sod,eod} = req.params
     let notiLength = undefined
     let {page} = req.params
@@ -146,7 +146,7 @@ Router.get('/title-date/:title/:sod/:eod/page',(req,res)=>{
     })
 })
 
-Router.get('/role-date/:role/:sod/:eod/page',(req,res)=>{
+Router.get('/role-date/:role/:sod/:eod/:page',(req,res)=>{
     let {role,sod,eod} = req.params
     let notiLength = undefined
     let {page} = req.params
@@ -188,7 +188,7 @@ Router.get('/role-date/:role/:sod/:eod/page',(req,res)=>{
     })
 })
 
-Router.get('/search/:title/:role/page',(req,res)=>{
+Router.get('/search/:title/:role/:page',(req,res)=>{
     let {title,role} = req.params
     let notiLength = undefined
     let {page} = req.params
@@ -227,7 +227,7 @@ Router.get('/search/:title/:role/page',(req,res)=>{
     })
 })
 
-Router.get('/search/:title/page',(req,res)=>{
+Router.get('/search/:title/:page',(req,res)=>{
     let {title} = req.params
     let notiLength = undefined
     let {page} = req.params
@@ -267,7 +267,7 @@ Router.get('/search/:title/page',(req,res)=>{
 })
 
 
-Router.get('/faculty/:role/page',(req,res)=>{
+Router.get('/faculty/:role/:page',(req,res)=>{
     let {role} = req.params
     let notiLength = undefined
     let {page} = req.params
@@ -306,7 +306,7 @@ Router.get('/faculty/:role/page',(req,res)=>{
     })
 })
 
-Router.get('/dateSort/:sod/:eod/page',(req,res)=>{
+Router.get('/dateSort/:sod/:eod/:page',(req,res)=>{
     let {sod,eod} = req.params
     let notiLength = undefined
     let {page} = req.params
