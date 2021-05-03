@@ -45,6 +45,10 @@ Router.put('/like/:idtus',async(req,res)=>{
 Router.post('/add/',async(req,res)=>{
     try{
         let {content}= req.body
+        if (!content){
+            throw new Error('không tìm thấy content')
+        }
+    
         let newTus = new Newfeed({
             content:content,
             user:{id:req.user.id,user_name:req.user.user_name,avatar:req.user.avatar},
@@ -52,10 +56,10 @@ Router.post('/add/',async(req,res)=>{
             commentcount:0
         })
         await newTus.save()
-    }catch(err){
-        return res.json({code:1,message:err})
-    }finally{
         res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
+        
+    }catch(error){
+        return res.json({code:1,message:error.message})
     }
 })
 
@@ -77,10 +81,10 @@ Router.post('/add/image',upload.single('image'),async(req,res)=>{
             commentcount:0
         })
         await newTus.save()
-    }catch(err){
-        res.json({code:1,message:err})
-    }finally{
         res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
+
+    }catch(error){
+        res.json({code:1,message:error.message})
     }
 })
 
