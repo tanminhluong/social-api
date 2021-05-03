@@ -83,10 +83,10 @@ Router.get('/page/:page',PageValidator,(req,res)=>{
 })
 
 
-Router.get('/search/:title/:role/:sod/:eod',(req,res)=>{
+Router.get('/search/:title/:role/:sod/:eod/:page',(req,res)=>{
     let {title,role,sod,eod} = req.params
     let notiLength = undefined
-    let {page} = req.body
+    let {page} = req.params
     let pageInt = parseInt(page)
     let pageSkip = undefined
 
