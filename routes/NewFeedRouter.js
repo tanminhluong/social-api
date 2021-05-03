@@ -28,16 +28,33 @@ Router.get('/',(req,res)=>{
 Router.get('/:time',async(req,res)=>{
     try{
         let {time} = req.params
+        let pageSkip = undefined
         if(!parseInt(time)){
             throw new Error ("Resquest không phải định dạng số")
         }
         let feeds = await Newfeed.find()
         if(Math.ceil(feeds.length/10)<parseInt(time)){
-            return res.json({code:1, message:"Chưa có trang thông báo này"})
+            return res.json({code:1, message:"Đã hết bài viết"})
         }  
+
+        if(parseInt(time)===1){
+            pageSkip = 0
+        }else{
+            pageSkip = (parseInt(time))*10
+        }
+
+        let feedlist = await Notification.find({}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+            
+        return res.json({
+                code:0,
+                message: 'Đọc danh sách newfeed thành công',
+                total:(Math.ceil(feeds.length/10)),
+                data:feedlist
+            })
+            
     }
     catch(err){
-
+        return res.json({code:1,message:err.message})
     }
 })
 
