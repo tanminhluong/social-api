@@ -31,7 +31,10 @@ Router.get('/:time',async(req,res)=>{
         if(!parseInt(time)){
             throw new Error ("Resquest không phải định dạng số")
         }
-        let feeds = Newfeed.find()
+        let feeds = await Newfeed.find()
+        if(Math.ceil(feeds.length/10)<parseInt(time)){
+            return res.json({code:1, message:"Chưa có trang thông báo này"})
+        }  
     }
     catch(err){
 
