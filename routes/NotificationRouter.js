@@ -103,7 +103,7 @@ Router.get('/search/:title/:role/:sod/:eod/page',(req,res)=>{
     })
 })
 
-Router.get('/title-date/:title/:sod/:eod',(req,res)=>{
+Router.get('/title-date/:title/:sod/:eod/page',(req,res)=>{
     let {title,sod,eod} = req.params
     Notification.find({title:{"$regex":title,"$options":"i"},date: {
         $gte: startOfDay(new Date(sod)), 
@@ -121,79 +121,195 @@ Router.get('/title-date/:title/:sod/:eod',(req,res)=>{
     })
 })
 
-Router.get('/role-date/:role/:sod/:eod',(req,res)=>{
+Router.get('/role-date/:role/:sod/:eod/page',(req,res)=>{
     let {role,sod,eod} = req.params
-    Notification.find({role:role,date: {
-        $gte: startOfDay(new Date(sod)), 
-        $lte: endOfDay(new Date(eod)) 
-    }}).sort({'date': 'desc'})
+    let notiLength = undefined
+    let {page} = req.params
+    let pageInt = parseInt(page)
+    let pageSkip = undefined
+
+    Notification.find()
     .then(Noti=>{
-        res.json({
-            code:0,
-            message:"Đọc danh sách thông báo search thành công",
-            data:Noti
-        })         
+        notiLength = Noti.length 
+        
+        if(Math.ceil(notiLength/10)<pageInt){
+            return res.json({code:1, message:"Chưa có trang thông báo này"})
+        }   
     })
-    .catch(e=>{
-        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
+    .then(()=>{
+        if(pageInt===1){
+            pageSkip = 0
+        }else{
+            pageSkip = (pageInt-1)*10
+        }
+        return pageSkip
     })
-})
-
-Router.get('/search/:title/:role',(req,res)=>{
-    let {title,role} = req.params
-    Notification.find({title:{"$regex":title,"$options":"i"},role:role}).sort({'date': 'desc'})
-    .then(Noti=>{
-        res.json({
-            code:0,
-            message:"Đọc danh sách thông báo search thành công",
-            data:Noti
-        })         
-    })
-    .catch(e=>{
-        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
-    })
-})
-
-Router.get('/search/:title',(req,res)=>{
-    let {title} = req.params
-    Notification.find({title:{"$regex":title,"$options":"i"}}).sort({'date': 'desc'})
-    .then(Noti=>{
-        res.json({
-            code:0,
-            message:"Đọc danh sách thông báo search thành công",
-            data:Noti
-        })         
-    })
-    .catch(e=>{
-        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
-    })
-})
-
-
-Router.get('/faculty/:role',(req,res)=>{
-    let {role} = req.params 
-    Notification.find({role:role}).sort({'date': 'desc'})
-    .then(Noti=>{
-        res.json({
-            code:0,
-            message:"Đọc danh sách thông báo search thành công",
-            data:Noti
-        })         
-    })
-    .catch(e=>{
-        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
-    })
-})
-
-Router.get('/dateSort/:sod/:eod',(req,res)=>{
-    let {sod,eod} = req.params
-    Notification.find({
-        date: {
+    then(pageSkip=>{
+        Notification.find({role:role,date: {
             $gte: startOfDay(new Date(sod)), 
             $lte: endOfDay(new Date(eod)) 
-        }
+        }}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
     })
+    .then(Noti=>{
+        res.json({
+            code:0,
+            message:"Đọc danh sách thông báo search thành công",
+            data:Noti
+        })         
+    })
+    .catch(e=>{
+        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
+    })
+})
+
+Router.get('/search/:title/:role/page',(req,res)=>{
+    let {title,role} = req.params
+    let notiLength = undefined
+    let {page} = req.params
+    let pageInt = parseInt(page)
+    let pageSkip = undefined
+
+    Notification.find()
+    .then(Noti=>{
+        notiLength = Noti.length 
+        
+        if(Math.ceil(notiLength/10)<pageInt){
+            return res.json({code:1, message:"Chưa có trang thông báo này"})
+        }   
+    })
+    .then(()=>{
+        if(pageInt===1){
+            pageSkip = 0
+        }else{
+            pageSkip = (pageInt-1)*10
+        }
+        return pageSkip
+    })
+    then(pageSkip=>{
+        Notification.find({title:{"$regex":title,"$options":"i"},role:role}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+    })
+    .then(Noti=>{
+        res.json({
+            code:0,
+            message:"Đọc danh sách thông báo search thành công",
+            data:Noti
+        })         
+    })
+    .catch(e=>{
+        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
+    })
+})
+
+Router.get('/search/:title/page',(req,res)=>{
+    let {title} = req.params
+    let notiLength = undefined
+    let {page} = req.params
+    let pageInt = parseInt(page)
+    let pageSkip = undefined
+
+    Notification.find()
+    .then(Noti=>{
+        notiLength = Noti.length 
+        
+        if(Math.ceil(notiLength/10)<pageInt){
+            return res.json({code:1, message:"Chưa có trang thông báo này"})
+        }   
+    })
+    .then(()=>{
+        if(pageInt===1){
+            pageSkip = 0
+        }else{
+            pageSkip = (pageInt-1)*10
+        }
+        return pageSkip
+    })
+    then(pageSkip=>{
+        Notification.find({title:{"$regex":title,"$options":"i"}}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+    })
+    .then(Noti=>{
+        res.json({
+            code:0,
+            message:"Đọc danh sách thông báo search thành công",
+            data:Noti
+        })         
+    })
+    .catch(e=>{
+        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
+    })
+})
+
+
+Router.get('/faculty/:role/page',(req,res)=>{
+    let {role} = req.params
+    let notiLength = undefined
+    let {page} = req.params
+    let pageInt = parseInt(page)
+    let pageSkip = undefined
+
+    Notification.find()
+    .then(Noti=>{
+        notiLength = Noti.length 
+        
+        if(Math.ceil(notiLength/10)<pageInt){
+            return res.json({code:1, message:"Chưa có trang thông báo này"})
+        }   
+    })
+    .then(()=>{
+        if(pageInt===1){
+            pageSkip = 0
+        }else{
+            pageSkip = (pageInt-1)*10
+        }
+        return pageSkip
+    })
+    then(pageSkip=>{
+        Notification.find({role:role}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+    }) 
+    .then(Noti=>{
+        res.json({
+            code:0,
+            message:"Đọc danh sách thông báo search thành công",
+            data:Noti
+        })         
+    })
+    .catch(e=>{
+        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
+    })
+})
+
+Router.get('/dateSort/:sod/:eod/page',(req,res)=>{
+    let {sod,eod} = req.params
+    let notiLength = undefined
+    let {page} = req.params
+    let pageInt = parseInt(page)
+    let pageSkip = undefined
+
+    Notification.find()
+    .then(Noti=>{
+        notiLength = Noti.length 
+        
+        if(Math.ceil(notiLength/10)<pageInt){
+            return res.json({code:1, message:"Chưa có trang thông báo này"})
+        }   
+    })
+    .then(()=>{
+        if(pageInt===1){
+            pageSkip = 0
+        }else{
+            pageSkip = (pageInt-1)*10
+        }
+        return pageSkip
+    })
+    then(pageSkip=>{
+        Notification.find({
+            date: {
+                $gte: startOfDay(new Date(sod)), 
+                $lte: endOfDay(new Date(eod)) 
+            }
+        })
         .sort({'date': 'desc'})
+        .limit(10).skip(parseInt(pageSkip))
+    })
     .then(Noti=>{
         res.json({
             code:0,
