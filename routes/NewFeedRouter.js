@@ -43,7 +43,7 @@ Router.get('/:time',async(req,res)=>{
             pageSkip = (parseInt(time))*10
         }
 
-        let feedlist = await Notification.find({}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+        let feedlist = await Newfeed.find({}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
             
         return res.json({
                 code:0,
@@ -59,24 +59,61 @@ Router.get('/:time',async(req,res)=>{
 })
 
 
+Router.get('/yourfeed/:id/:time',async(req,res)=>{
+    try{
+        let {id,time} = req.params
+        let pageSkip = undefined
+        if(!parseInt(time)){
+            throw new Error ("Resquest không phải định dạng số")
+        }
+        let feeds = await Newfeed.find({user:{id:id}})
+        if(Math.ceil(feeds.length/10)<parseInt(time)){
+            return res.json({code:1, message:"Đã hết bài viết"})
+        }  
+
+        if(parseInt(time)===1){
+            pageSkip = 0
+        }else{
+            pageSkip = (parseInt(time))*10
+        }
+
+        let feedlist = await Newfeed.find({user:{id:id}}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+            
+        return res.json({
+                code:0,
+                message: 'Đọc danh sách newfeed thành công',
+                total:(Math.ceil(feeds.length/10)),
+                data:feedlist
+            })
+            
+    }
+    catch(err){
+        return res.json({code:1,message:err.message})
+    }
+})
+
 Router.put('/comment/:id',async(req,res)=>{
     try{
         let {id} = req.params
         let {comment} = req.body
         let id_user = req.user.id
+        let original_id = mongoose.Types.ObjectId()
         if (!id){
             throw new Error ("Không nhận được id bài viết")
         }
-        if(!comment){
+        if(!comment){   
             throw new Error ("Không nhận được thông tin bình luận")
         }
-        console.log({id_user:id_user,comment:comment,time:new Date().toISOString()})
         let updatecountcmt = await Newfeed.findByIdAndUpdate(id,{$inc:{commentcount:1}},{useFindAndModify:false})
-        updatecountcmt.commentlist.push({id_user:id_user,comment:comment,time:new Date().toISOString()})
+        updatecountcmt.commentlist.push({
+            _id:original_id,
+            id_user:id_user,
+            comment:comment,
+            time:new Date().toISOString()})
         await updatecountcmt.save()
         return res.json({code:0,message:'Bình luận bài đăng thành công'})
     }catch(err){
-        return res.json({code:2,message:err})
+        return res.json({code:2,message:err.message})
     }
 })
 
