@@ -101,7 +101,7 @@ app.use('/api',apigoogle)
 // adminPDA
 // mn2jHpinkZEvtYi
 
-mongoose.connect('mongodb://localhost/FPJ',{
+mongoose.connect('mongodb+srv://adminPDA:mn2jHpinkZEvtYi@cluster0.v9bnw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',{
     useNewUrlParser:true,
     useUnifiedTopology:true
 })
