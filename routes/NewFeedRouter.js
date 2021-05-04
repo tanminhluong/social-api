@@ -18,7 +18,7 @@ Router.get('/',(req,res)=>{
     })
 })
 
-Router.get('/:time',async(req,res)=>{
+Router.get('/:time', async(req,res)=>{
     try{
         let {time} = req.params
         let pageSkip = undefined
@@ -26,7 +26,7 @@ Router.get('/:time',async(req,res)=>{
             throw new Error ("Resquest không phải định dạng số")
         }
         let feeds = await Newfeed.find()
-        if(Math.ceil(feeds.length/10)<parseInt(time)){
+        if(Math.ceil(feeds.length/10) < parseInt( time )){
             return res.json({code:1, message:"Đã hết bài viết"})
         }  
 
@@ -56,10 +56,12 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
     try{
         let {id,time} = req.params
         let pageSkip = undefined
+
         if(!parseInt(time)){
             throw new Error ("Resquest không phải định dạng số")
         }
-        let feeds = await Newfeed.find({user:{id:id}})
+        let feeds = await Newfeed.find({"user.user_id": mongoose.Types.ObjectId(id)})
+
         if(Math.ceil(feeds.length/10)<parseInt(time)){
             return res.json({code:1, message:"Đã hết bài viết"})
         }  
@@ -69,16 +71,16 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
         }else{
             pageSkip = (parseInt(time))*10
         }
-
-        let feedlist = await Newfeed.find({user:{id:id}}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
-            
+         
+        let feedlist = await Newfeed.find({"user.user_id": mongoose.Types.ObjectId(id)})
+        .sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+        console.log(feedlist)
         return res.json({
                 code:0,
                 message: 'Đọc danh sách newfeed thành công',
                 total:(Math.ceil(feeds.length/10)),
                 data:feedlist
-            })
-            
+            })    
     }
     catch(err){
         return res.json({code:1,message:err.message})
@@ -133,7 +135,7 @@ Router.post('/add',async(req,res)=>{
     
         let newTus = new Newfeed({
             content:content,
-            user:{id:req.user.id,user_name:req.user.user_name,avatar:req.user.avatar},
+            user:{user_id:mongoose.Types.ObjectId(req.user.id),user_name:req.user.user_name,avatar:req.user.avatar},
             likecount: 0,
             commentcount:0,
             linkyoutube:linkyoutube
@@ -154,7 +156,7 @@ Router.post('/add/image',upload.single('image'),async(req,res)=>{
         let newTus = new Newfeed({
             content:content,
             user:{
-                id:req.user.id,
+                user_id:mongoose.Types.ObjectId(req.user.id),
                 user_name:req.user.user_name,
                 avatar:req.user.avatar
             },

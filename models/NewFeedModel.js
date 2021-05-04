@@ -5,7 +5,14 @@ const NewFeedSchema = new Schema({
     content:String,
     image:String,
     idimage:String,
-    user:Object,
+    user: {
+        user_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Account'
+        },
+        user_name: String,
+        avatar: String
+    },
     likecount:Number,
     likelist:[Object],
     commentcount:Number,
