@@ -24,24 +24,6 @@ app.set('socketio', io)
 
 const CheckLogin = require('./auth/CheckLogin')
 const CheckAdmin = require('./middleware/CheckAdmin')
-// function authFaculty(req,res,next){
-
-//     const token  = req.body['token']
-//     if (token ==null ) 
-//     return res.json({
-//         code: 3,
-//         message: 'Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại'
-//     })
-//     jwt.verify(token,process.env.JWT_SECRET,(err,user)=>{
-//         if(err) 
-//         return res.json({
-//             code:3,
-//             message: 'bạn không có quyền đăng nhập'
-//         })
-//         next()
-
-//     })
-// }
 
 app.use(express.urlencoded({extended:false}))
 app.use(express.json())
@@ -108,10 +90,10 @@ app.get('/auth/google/callback',
 })
 
 app.use('/role',RoleRouter)
-app.use('/notification',NotificationrRouter)
+app.use('/notification',CheckLogin,NotificationrRouter)
 app.use('/account',AccountRouter)
 app.use('/roleadd',AddRole)
-app.use('/admin',AdminRouter)
+app.use('/admin',CheckAdmin,CheckLogin,AdminRouter)
 app.use('/newfeed',CheckLogin,NewFeedRouter)
 app.use('/api',apigoogle)
 
