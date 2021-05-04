@@ -6,7 +6,7 @@ const CheckLogin = require('../auth/CheckLogin')
 const NotificationValidator = require('./validators/NotificationValidator')
 const PageValidator = require('./validators/NotificationPageValidator')
 const endOfDay=  require('date-fns/endOfDay')
-const startOfDay = require('date-fns/startOfDay') 
+const startOfDay = require('date-fns/startOfDay')
 
 Router.get('/:id',(req,res)=>{
     let {id} = req.params
@@ -294,6 +294,44 @@ Router.get('/faculty/:role/:page',async(req,res)=>{
     }
 })
 
+Router.get('/yourpost/:page',async(req,res)=>{
+    try{
+        let notiLength = undefined
+        let {page} = req.params
+        let idcurrent = req.user.user
+        let pageInt = parseInt(page)
+        let pageSkip = undefined
+        
+        notiall = await Notification.find({
+            user:idcurrent
+        })
+        notiLength = notiall.length 
+        if(Math.ceil(notiLength/10)<pageInt){
+            return res.json({code:1, message:"Chưa có trang thông báo này"})
+        }   
+        
+        if(pageInt===1){
+            pageSkip = 0
+        }else{
+            pageSkip = (pageInt-1)*10
+        }
+        
+        notilist = await Notification.find({
+            user:idcurrent
+        })
+        .sort({'date': 'desc'})
+        .limit(10).skip(parseInt(pageSkip))
+        return res.json({
+                code:0,
+                message:"Đọc danh sách thông báo search thành công",
+                total:(Math.ceil(notiLength/10)),
+                data:notilist
+            })         
+        }
+    catch(e){
+        return res.status(401).json({code:2,message:"Đọc danh sách thất bại thất bại:"+ e.message})
+    }
+})
 
 
 Router.get('/dateSort/:sod/:eod/:page',async(req,res)=>{
@@ -303,7 +341,6 @@ Router.get('/dateSort/:sod/:eod/:page',async(req,res)=>{
         let {page} = req.params
         let pageInt = parseInt(page)
         let pageSkip = undefined
-        console.log(sod,eod)
         notiall = await Notification.find({
             date: {
                 $gte: startOfDay(new Date(sod)), 
@@ -342,42 +379,58 @@ Router.get('/dateSort/:sod/:eod/:page',async(req,res)=>{
     }
 })
 
-Router.post('/add',CheckLogin,NotificationValidator,(req,res)=>{
-    let result = validationResult(req)
-    if(result.errors.length ===0){
-        let {content,title,role,description}= req.body
-        let userCurrent = req.user.user
-        let roleCurrent = req.user.faculty
-        
-        if(roleCurrent.includes(role)==false){
-            return res.json({code:2,message:"Tài khoản không được cấp quyền của Role này"}) 
-        }    	
-        var today = new Date();
-        let newNotification = new Notification({
-            title:title,
-            content:content,
-            description:description,
-            role:role,
-            user:userCurrent
-        })
-        newNotification.save()
+
+const server = require('http').createServer(Router);
+const io = require('socket.io')(server);
+io.on('connection', function(socket){
+    socket.on('notiadd', (data) => {
+        console.log(data);
+    })
     
-        .then(()=>{
-            return res.json({code:0,message:'Tạo thông báo thành công'})    
-        })
-        .catch(e=>{
-            return res.json({code:2,message:"Tạo thông báo thất bại:"+ e.message})
-        })     
-    }
-    else{
-        let messages = result.mapped()
-        let message = ''
-        for(m in messages){
-            message= messages[m].msg
-            break
+    console.log('a user connected');
+    socket.on('disconnect', function(){
+      console.log('user disconnected');
+    })
+  
+});
+
+Router.post('/add',CheckLogin,NotificationValidator,async(req,res)=>{
+    try{
+        let result = validationResult(req)
+        var io = req.app.get('socketio');
+        if(result.errors.length ===0){
+            let {content,title,role,description}= req.body
+            let userCurrent = req.user.user
+            let roleCurrent = req.user.faculty
+            
+            if(roleCurrent.includes(role)==false){
+                return res.json({code:2,message:"Tài khoản không được cấp quyền của Role này"}) 
+            }
+            let newNotification = new Notification({
+                title:title,
+                content:content,
+                description:description,
+                role:role,
+                user:userCurrent
+            })
+            await newNotification.save()
+            io.emit("new_notification",newNotification)
+            return res.json({code:0,message:'Tạo thông báo thành công'})             
+            }
+        else{
+            let messages = result.mapped()
+            let message = ''
+            for(m in messages){
+                message= messages[m].msg
+                break
+            }
+            throw new Error (message)
         }
-        return res.json({code:1,message:message})
+    }catch(err){
+        return res.json({code:1,message:err})
     }
+
+    
 })
 
 

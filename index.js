@@ -5,7 +5,9 @@ const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const cors = require('cors')
 const passport = require('passport');
-require('./routes/validators/googlePassport')
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
 
 const Account = require('./models/AccountModel')
 const RoleRouter = require('./routes/RoleRouter')
@@ -18,6 +20,7 @@ const apigoogle = require('./routes/apigoogle')
 
 app.use(cors())
 app.use(passport.initialize())
+app.set('socketio', io)
 
 const CheckLogin = require('./auth/CheckLogin')
 const CheckAdmin = require('./middleware/CheckAdmin')
@@ -102,7 +105,7 @@ app.get('/auth/google/callback',
         .catch(e=>{
             return res.status(401).json({code:2,message:"Đăng nhập thất bại:"+ e.message})
         })
-});
+})
 
 app.use('/role',RoleRouter)
 app.use('/notification',NotificationrRouter)
@@ -115,12 +118,13 @@ app.use('/api',apigoogle)
 // mongodb+srv://adminPDA:<password>@cluster0.v9bnw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
 // adminPDA
 // mn2jHpinkZEvtYi
-mongoose.connect('mongodb+srv://adminPDA:mn2jHpinkZEvtYi@cluster0.v9bnw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',{
+
+mongoose.connect('mongodb://localhost/FPJ',{
     useNewUrlParser:true,
     useUnifiedTopology:true
 })
 .then(()=>{
-    app.listen(port,()=>{
+    server.listen(port,()=>{
         console.log(`http://localhost:${port}`)
     })
 })
