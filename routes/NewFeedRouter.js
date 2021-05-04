@@ -58,6 +58,28 @@ Router.get('/:time',async(req,res)=>{
     }
 })
 
+
+Router.put('/comment/:id',async(req,res)=>{
+    try{
+        let {id} = req.params
+        let {comment} = req.body
+        let id_user = req.user.id
+        if (!id){
+            throw new Error ("Không nhận được id bài viết")
+        }
+        if(!comment){
+            throw new Error ("Không nhận được thông tin bình luận")
+        }
+        console.log({id_user:id_user,comment:comment,time:new Date().toISOString()})
+        let updatecountcmt = await Newfeed.findByIdAndUpdate(id,{$inc:{commentcount:1}},{useFindAndModify:false})
+        updatecountcmt.commentlist.push({id_user:id_user,comment:comment,time:new Date().toISOString()})
+        await updatecountcmt.save()
+        return res.json({code:0,message:'Bình luận bài đăng thành công'})
+    }catch(err){
+        return res.json({code:2,message:err})
+    }
+})
+
 Router.put('/like/:idtus',async(req,res)=>{
     try{
         let {id,user_name} = req.user
