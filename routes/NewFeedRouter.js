@@ -1,16 +1,9 @@
 const express = require('express')
 const Router = express.Router()
-const multer = require('multer')
-const fs = require('fs')
-const {Server} = require('socket.io')
-const io = new Server()
-
 const Newfeed = require('../models/NewFeedModel')
 const {validationResult} = require('express-validator')
 const NewFeedValidator = require('./validators/addNewfeed')
-
-const endOfDay=  require('date-fns/endOfDay')
-const startOfDay = require('date-fns/startOfDay') 
+const mongoose = require('mongoose')
 const {cloudinary} = require('../configCloud/Cloudinary')
 const upload = require('../configCloud/multer')
 
@@ -92,6 +85,23 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
     }
 })
 
+Router.put('/like/:idtus',async(req,res)=>{
+    try{
+        let {id,user_name} = req.user
+        let idtus = req.params.idtus
+        let updateLike = await Newfeed.findByIdAndUpdate(idtus,{$inc:{likecount:1}},{useFindAndModify:false})
+        updateLike.likelist.push({id_user:id,user_name:user_name})
+        await updateLike.save()
+        
+        // let test = await Newfeed.find({_id:idtus},'likelist')
+        // console.log(test)
+        // console.log(updateLike.likelist.includes("607e803329744743e4d6df30"))
+        return res.json({code:0,message:'Like bài đăng thành công'})
+    }catch (err){
+        return res.json({code:2,message:err})
+    }
+})
+
 Router.put('/comment/:id',async(req,res)=>{
     try{
         let {id} = req.params
@@ -114,23 +124,6 @@ Router.put('/comment/:id',async(req,res)=>{
         return res.json({code:0,message:'Bình luận bài đăng thành công'})
     }catch(err){
         return res.json({code:2,message:err.message})
-    }
-})
-
-Router.put('/like/:idtus',async(req,res)=>{
-    try{
-        let {id,user_name} = req.user
-        let idtus = req.params.idtus
-        let updateLike = await Newfeed.findByIdAndUpdate(idtus,{$inc:{likecount:1}},{useFindAndModify:false})
-        updateLike.likelist.push({id_user:id,user_name:user_name})
-        await updateLike.save()
-        
-        // let test = await Newfeed.find({_id:idtus},'likelist')
-        // console.log(test)
-        // console.log(updateLike.likelist.includes("607e803329744743e4d6df30"))
-        return res.json({code:0,message:'Like bài đăng thành công'})
-    }catch (err){
-        return res.json({code:2,message:err})
     }
 })
 
