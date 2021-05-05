@@ -65,14 +65,14 @@ Router.post('/login',loginValidator,(req,res)=>{
     }
 })
 
-Router.put('/update/user/:id',async(req,res)=>{
+Router.put('/update/user',async(req,res)=>{
     try{
         let id = req.params
         let {faculty,birth,phone,gender} = req.body
         if(!faculty){
             throw new Error("Vui lòng cung cấp khoa")
         }
-        await AccountModel.findByIdAndUpdate(id, {
+        await AccountModel.findByIdAndUpdate(req.user.id, {
             faculty:faculty,
             birth:birth,
             phone:phone,
