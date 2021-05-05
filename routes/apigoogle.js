@@ -59,11 +59,11 @@ Router.post('/googlelogin',(req,res)=>{
                             const {JWT_SECRET} = process.env
                             const token = jwt.sign({
                                 id:user.id,
-                            user:user.user,
-                            user_name:user.user_name,
-                            avatar:user.avatar, 
-                            role:user.role,
-                            faculty:user.faculty
+                                user:user.user,
+                                user_name:user.user_name,
+                                avatar:user.avatar, 
+                                role:user.role,
+                                faculty:user.faculty
                             },JWT_SECRET,{expiresIn:"3d"})
                             res.json({code:0,message:"Đăng nhập thành công",token:token})
                         })

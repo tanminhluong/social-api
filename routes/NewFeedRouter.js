@@ -109,7 +109,7 @@ Router.put('/comment/:id',async(req,res)=>{
         let {id} = req.params
         let {comment} = req.body
         let id_user = req.user.id
-        let user_name = req.user.name
+        let user_name = req.user.user_name
         let avatar = req.user.avatar
         let original_id = mongoose.Types.ObjectId()
         if (!id){
@@ -132,6 +132,8 @@ Router.put('/comment/:id',async(req,res)=>{
         return res.json({code:2,message:err.message})
     }
 })
+
+// Router.('/')
 
 Router.post('/add',async(req,res)=>{
     try{
