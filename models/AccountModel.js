@@ -11,6 +11,7 @@ const AccountSchema = new Schema({
     gender:String,
     phone:String,
     avatar:String,
+    id_avatar:String,
     password: String,
     role:String,
     faculty:Array,

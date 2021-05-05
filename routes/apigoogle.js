@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken')
 const AccountModel = require('../models/AccountModel')
 const mongoose = require('mongoose')
 const client = new OAuth2Client("173768816222-a3th16lqbckuej5epilhsnv3tg0l031q.apps.googleusercontent.com")
+const {cloudinary} = require('../configCloud/Cloudinary')
+const upload = require('../configCloud/multer')
 
 Router.get('/student',(req,res)=>{
     AccountModel.find({role:"student"})
