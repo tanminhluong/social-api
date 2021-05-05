@@ -78,7 +78,7 @@ Router.put('/update/user',async(req,res)=>{
             phone:phone,
             gender:gender
         },{new:true})
-
+        return res.json({code:0,message:"Cập nhật thông tin thành công"})
 
     }catch(err){
         return res.json({code:2,message:err.message})
