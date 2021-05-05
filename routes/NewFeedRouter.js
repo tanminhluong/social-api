@@ -133,21 +133,32 @@ Router.put('/comment/:id',async(req,res)=>{
     }
 })
 
-
-Router.post('/add',async(req,res)=>{
+Router.put('/delete/comment/:cmt_id',async(req,res)=>{
     try{
-        let {content,linkyoutube}= req.body
+        let {cmt_id} = req.params
+        if(!cmt_id){
+            throw new Error ("không có thông tin id của bình luật cần xóa")
+        }
+
+        let IDuserCheck = req.user.id
+
+        if(req.user.role ==="student"){
+            dataCheck = await Newfeed.find({"commentlist.cmt_id" : mongoose.Types.ObjectId(cmt_id)})
+            if(IDuserCheck !== dataCheck.user.user_id){
+                throw new Error ("Tài khoản không được xóa bình luận này")
+            }
+        }
+        deletecmt = await Newfeed.findOneAndUpdate(
+            {"commentlist.cmt_id" : mongoose.Types.ObjectId(cmt_id)},
+            {$pull: { 
+                commentlist: {
+                    cmt_id: mongoose.Types.ObjectId(cmt_id)
+                }
+            }},
+            { safe: true, multi:true })
+        await Newfeed.findByIdAndUpdate(deletecmt._id,{$inc:{commentcount:-1}},{useFindAndModify:false})
+        return res.json({code:0,message:'Xóa bình luận bài đăng thành công'})
     
-        let newTus = new Newfeed({
-            content:content,
-            user:{user_id:mongoose.Types.ObjectId(req.user.id),user_name:req.user.user_name,avatar:req.user.avatar},
-            likecount: 0,
-            commentcount:0,
-            linkyoutube:linkyoutube
-        })
-        await newTus.save()
-        res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
-        
     }catch(error){
         return res.json({code:1,message:error.message})
     }

@@ -65,7 +65,26 @@ Router.post('/login',loginValidator,(req,res)=>{
     }
 })
 
+Router.put('/update/user/:id',async(req,res)=>{
+    try{
+        let id = req.params
+        let {faculty,birth,phone,gender} = req.body
+        if(!faculty){
+            throw new Error("Vui lòng cung cấp khoa")
+        }
+        await AccountModel.findByIdAndUpdate(id, {
+            faculty:faculty,
+            birth:birth,
+            phone:phone,
+            gender:gender
+        },{new:true})
 
+
+    }catch(err){
+        return res.json({code:2,message:err.message})
+    }
+
+})
 
 Router.get("/current",CheckLogin,(req,res)=>{
     res.json({
