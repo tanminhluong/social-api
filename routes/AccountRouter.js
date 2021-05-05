@@ -71,14 +71,30 @@ Router.put('/update/user',CheckLogin,async(req,res)=>{
         if(!faculty){
             throw new Error("Vui lòng cung cấp khoa")
         }
-        await AccountModel.findByIdAndUpdate(req.user.id, {
+        account = await AccountModel.findByIdAndUpdate(req.user.id, {
             faculty:faculty,
             birth:birth,
             phone:phone,
             gender:gender
         },{new:true})
-        return res.json({code:0,message:"Cập nhật thông tin thành công"})
-
+        const {JWT_SECRET} = process.env
+        jwt.sign({
+            id:account.id,
+            user:account.user,
+            user_name:account.user_name,
+            avatar:account.avatar, 
+            role:account.role,
+            faculty:account.faculty
+        },JWT_SECRET,{
+            expiresIn:'3h'
+        },(err,token)=>{
+            if(err) throw err
+            return res.json({
+                code:0,
+                message:"cập nhập thành công",
+                token: token
+            })
+        })
     }catch(err){
         return res.json({code:2,message:err.message})
     }
