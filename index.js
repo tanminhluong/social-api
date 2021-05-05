@@ -93,7 +93,7 @@ app.use('/role',RoleRouter)
 app.use('/notification',CheckLogin,NotificationrRouter)
 app.use('/account',AccountRouter)
 app.use('/roleadd',AddRole)
-app.use('/admin',CheckAdmin,CheckLogin,AdminRouter)
+app.use('/admin',CheckLogin,CheckAdmin,AdminRouter)
 app.use('/newfeed',CheckLogin,NewFeedRouter)
 app.use('/api',apigoogle)
 

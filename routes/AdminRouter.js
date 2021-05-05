@@ -46,7 +46,7 @@ Router.get('/user/:id',(req,res)=>{
 Router.post('/adduser',addfacultyValidator,(req,res)=>{
     let result = validationResult(req)
     if(result.errors.length ===0){
-        let {user,password,role}= req.body
+        let {user,password,faculty}= req.body
         AccountModel.findOne({user:user})
         .then(acc=>{
             if(acc){
@@ -61,9 +61,9 @@ Router.post('/adduser',addfacultyValidator,(req,res)=>{
                 avatar:"https://res.cloudinary.com/tdtimg/image/upload/v1619852102/wuib8yglnihou4zycrho.jpg",
                 password:hashed,
                 role:"user",
-                faculty:role
+                faculty:faculty
             })
-            AccountModel.save()
+            userFaculty.save()
         })
         .then(()=>{
             return res.json({code:0,message:'Đăng ký thành công'})    
