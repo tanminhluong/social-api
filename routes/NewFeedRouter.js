@@ -133,7 +133,17 @@ Router.put('/comment/:id',async(req,res)=>{
     }
 })
 
-// Router.('/')
+Router.put('/delete/comment/:cmt_id/:feed_id',async(req,res)=>{
+    try{
+        let {cmt_id,feed_id} = req.params
+        let user_id = req.user.user_id
+
+        check = await Newfeed.findOne({_id:cmt_id},{'user.user_id':mongoose.Types.ObjectId(cmt_id)})
+        console.log(check)
+    }catch(err){
+        return res.json({code:1,message:error.message})
+    }
+})
 
 Router.post('/add',async(req,res)=>{
     try{
