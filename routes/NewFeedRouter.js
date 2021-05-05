@@ -133,14 +133,22 @@ Router.put('/comment/:id',async(req,res)=>{
     }
 })
 
-Router.put('/delete/comment/:cmt_id/:feed_id',async(req,res)=>{
-    try{
-        let {cmt_id,feed_id} = req.params
-        let user_id = req.user.user_id
 
-        check = await Newfeed.findOne({_id:cmt_id},{'user.user_id':mongoose.Types.ObjectId(cmt_id)})
-        console.log(check)
-    }catch(err){
+Router.post('/add',async(req,res)=>{
+    try{
+        let {content,linkyoutube}= req.body
+    
+        let newTus = new Newfeed({
+            content:content,
+            user:{user_id:mongoose.Types.ObjectId(req.user.id),user_name:req.user.user_name,avatar:req.user.avatar},
+            likecount: 0,
+            commentcount:0,
+            linkyoutube:linkyoutube
+        })
+        await newTus.save()
+        res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
+        
+    }catch(error){
         return res.json({code:1,message:error.message})
     }
 })
