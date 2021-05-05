@@ -104,20 +104,38 @@ Router.put('/update/user',CheckLogin,async(req,res)=>{
 
 })
 
-// Router.put('/update/avatar'.CheckLogin,upload.single("image"),async(req,res)=>{
-//     try{
-//         let user = await AccountModel.findById(req.user.id)
-//         await cloudinary.uploader.destroy(user.cloudinary_id)
-//         let result = await cloudinary.uploader(req.file.path)
-//         let data = {
-//             avatar: result.secure_url,
-//             id_avatar: result.public_id
-//         }
-//         user = await AccountModel.findByIdAndUpdate({req.user.id})
-//     }catch(err){
-//         return res.json({code:1,message:err.message})
-//     }
-// })
+Router.put('/update/avatar',CheckLogin,upload.single("image"),async(req,res)=>{
+    try{
+        let user = await AccountModel.findById(req.user.id)
+        await cloudinary.uploader.destroy(user.cloudinary_id)
+        let result = await cloudinary.uploader(req.file.path)
+        let data = {
+            avatar: result.secure_url,
+            id_avatar: result.public_id
+        }
+        account = await AccountModel.findByIdAndUpdate(req.user.id,data,req)
+        const {JWT_SECRET} = process.env
+        jwt.sign({
+            id:account.id,
+            user:account.user,
+            user_name:account.user_name,
+            avatar:account.avatar, 
+            role:account.role,
+            faculty:account.faculty
+        },JWT_SECRET,{
+            expiresIn:'3h'
+        },(err,token)=>{
+            if(err) throw err
+            return res.json({
+                code:0,
+                message:"cập nhập thành công",
+                token: token
+            })
+        })
+    }catch(err){
+        return res.json({code:1,message:err.message})
+    }
+})
 
 Router.get("/current",CheckLogin,(req,res)=>{
     res.json({
