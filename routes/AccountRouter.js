@@ -65,9 +65,8 @@ Router.post('/login',loginValidator,(req,res)=>{
     }
 })
 
-Router.put('/update/user',async(req,res)=>{
+Router.put('/update/user',CheckLogin,async(req,res)=>{
     try{
-        let id = req.params
         let {faculty,birth,phone,gender} = req.body
         if(!faculty){
             throw new Error("Vui lòng cung cấp khoa")
