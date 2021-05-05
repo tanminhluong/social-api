@@ -109,6 +109,8 @@ Router.put('/comment/:id',async(req,res)=>{
         let {id} = req.params
         let {comment} = req.body
         let id_user = req.user.id
+        let user_name = req.user.name
+        let avatar = req.user.avatar
         let original_id = mongoose.Types.ObjectId()
         if (!id){
             throw new Error ("Không nhận được id bài viết")
@@ -120,6 +122,8 @@ Router.put('/comment/:id',async(req,res)=>{
         updatecountcmt.commentlist.push({
             _id:original_id,
             id_user:id_user,
+            user_name: user_name,
+            avatar: avatar,
             comment:comment,
             time:new Date().toISOString()})
         await updatecountcmt.save()
