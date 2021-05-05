@@ -63,7 +63,7 @@ Router.post('/adduser',addfacultyValidator,(req,res)=>{
                 role:"user",
                 faculty:role
             })
-            userFaculty.save()
+            AccountModel.save()
         })
         .then(()=>{
             return res.json({code:0,message:'Đăng ký thành công'})    

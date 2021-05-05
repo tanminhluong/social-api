@@ -104,9 +104,16 @@ Router.put('/update/user',CheckLogin,async(req,res)=>{
 
 })
 
-// Router.put('/update/avatar',upload.single("image"),async(req,res)=>{
+// Router.put('/update/avatar'.CheckLogin,upload.single("image"),async(req,res)=>{
 //     try{
-//         let 
+//         let user = await AccountModel.findById(req.user.id)
+//         await cloudinary.uploader.destroy(user.cloudinary_id)
+//         let result = await cloudinary.uploader(req.file.path)
+//         let data = {
+//             avatar: result.secure_url,
+//             id_avatar: result.public_id
+//         }
+//         user = await AccountModel.findByIdAndUpdate({req.user.id})
 //     }catch(err){
 //         return res.json({code:1,message:err.message})
 //     }
