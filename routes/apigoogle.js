@@ -46,11 +46,13 @@ Router.post('/googlelogin',(req,res)=>{
                         res.json({code:0,message:"Đăng nhập thành công",token:token})
                         
                     }else{
+                        const imageCloud = await cloudinary.uploader.upload(picture)
                         let newAccount = new AccountModel({
                             _id:original_id,
                             user:email,
                             user_name:name,
-                            avatar:picture,
+                            avatar:imageCloud.secure_url,
+                            id_avatar:imageCloud.public_id,
                             role:"student"
                         })
                         newAccount.save((err,data)=>{
@@ -59,14 +61,12 @@ Router.post('/googlelogin',(req,res)=>{
                                     code:2,message:err.message
                                 })
                             }
-                            const imageCloud = await cloudinary.uploader.upload(picture)
                             const {JWT_SECRET} = process.env
                             const token = jwt.sign({
                                 id:data.id,
                                 user:data.user,
                                 user_name:data.user_name,
-                                avatar:imageCloud.secure_url,
-                                id_avatar:imageCloud.public_id, 
+                                avatar:data.avatar,
                                 role:data.role,
                                 faculty:data.faculty
                                 },JWT_SECRET,{expiresIn:"3d"})
