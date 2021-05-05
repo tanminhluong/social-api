@@ -67,7 +67,6 @@ Router.post('/login',loginValidator,(req,res)=>{
     }
 })
 
-Router('')
 
 Router.put('/update/user',CheckLogin,async(req,res)=>{
     try{

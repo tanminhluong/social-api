@@ -20,7 +20,7 @@ Router.get('/student',(req,res)=>{
     
 })
 
-Router.post('/googlelogin',(req,res)=>{
+Router.post('/googlelogin',async(req,res)=>{
     const{tokenId}=req.body
     let original_id = mongoose.Types.ObjectId()
     client.verifyIdToken({idToken :tokenId,audience:"173768816222-a3th16lqbckuej5epilhsnv3tg0l031q.apps.googleusercontent.com"})
@@ -48,7 +48,8 @@ Router.post('/googlelogin',(req,res)=>{
                         res.json({code:0,message:"Đăng nhập thành công",token:token})
                         
                     }else{
-                        const imageCloud = await cloudinary.uploader.upload(picture)
+                        cloudinary.uploader.upload(picture)
+                        .then(imageCloud=>{
                         let newAccount = new AccountModel({
                             _id:original_id,
                             user:email,
@@ -74,6 +75,7 @@ Router.post('/googlelogin',(req,res)=>{
                                 },JWT_SECRET,{expiresIn:"3d"})
                                 res.json({code:0,message:"Đăng nhập thành công",token:token})
                         })
+                    })
                     }
                 }
             })
