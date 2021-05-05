@@ -64,7 +64,7 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
 
         if(Math.ceil(feeds.length/10)<parseInt(time)){
             return res.json({code:1, message:"Đã hết bài viết"})
-        }  
+        }
 
         if(parseInt(time)===1){
             pageSkip = 0

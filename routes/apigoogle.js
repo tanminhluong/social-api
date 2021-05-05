@@ -59,12 +59,14 @@ Router.post('/googlelogin',(req,res)=>{
                                     code:2,message:err.message
                                 })
                             }
+                            const imageCloud = await cloudinary.uploader.upload(picture)
                             const {JWT_SECRET} = process.env
                             const token = jwt.sign({
                                 id:data.id,
                                 user:data.user,
                                 user_name:data.user_name,
-                                avatar:data.avatar, 
+                                avatar:imageCloud.secure_url,
+                                id_avatar:imageCloud.public_id, 
                                 role:data.role,
                                 faculty:data.faculty
                                 },JWT_SECRET,{expiresIn:"3d"})

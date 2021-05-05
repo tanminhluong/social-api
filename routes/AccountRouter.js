@@ -3,6 +3,8 @@ const Router = express.Router()
 const {validationResult} = require('express-validator')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const {cloudinary} = require('../configCloud/Cloudinary')
+const upload = require('../configCloud/multer')
 
 const CheckLogin = require('../auth/CheckLogin')
 const AccountModel= require('../models/AccountModel')
@@ -65,6 +67,8 @@ Router.post('/login',loginValidator,(req,res)=>{
     }
 })
 
+Router('')
+
 Router.put('/update/user',CheckLogin,async(req,res)=>{
     try{
         let {faculty,birth,phone,gender} = req.body
@@ -100,6 +104,14 @@ Router.put('/update/user',CheckLogin,async(req,res)=>{
     }
 
 })
+
+// Router.put('/update/avatar',upload.single("image"),async(req,res)=>{
+//     try{
+//         let 
+//     }catch(err){
+//         return res.json({code:1,message:err.message})
+//     }
+// })
 
 Router.get("/current",CheckLogin,(req,res)=>{
     res.json({
