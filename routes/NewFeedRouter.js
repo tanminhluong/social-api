@@ -136,7 +136,13 @@ Router.put('/comment/:id',async(req,res)=>{
             comment:comment,
             time:new Date().toISOString()}
         let updatecountcmt = await Newfeed.findByIdAndUpdate(id,{$inc:{commentcount:1}},{useFindAndModify:false})
-        updatecountcmt.commentlist.push({data})
+        updatecountcmt.commentlist.push({
+            _id:original_id,
+            id_user:id_user,
+            user_name: user_name,
+            avatar: avatar,
+            comment:comment,
+            time:new Date().toISOString()})
         await updatecountcmt.save()
         return res.json({code:0,message:'Bình luận bài đăng thành công'})
     }catch(err){
@@ -166,6 +172,7 @@ Router.put('/delete/comment/:cmt_id',async(req,res)=>{
                 }
             }},
             { safe: true, multi:true })
+            console.log(deletecmt)
         await Newfeed.findByIdAndUpdate(deletecmt._id,{$inc:{commentcount:-1}},{useFindAndModify:false})
         return res.json({code:0,message:'Xóa bình luận bài đăng thành công'})
     
