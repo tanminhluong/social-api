@@ -187,7 +187,7 @@ Router.put('/rename',CheckLogin,async(req,res)=>{
     }
 })
 
-Router.put('/update/avatar/:id',CheckLogin,upload.single("image"),async(req,res)=>{
+Router.put('/update/avatar',CheckLogin,upload.single("image"),async(req,res)=>{
     try{
         let id = req.params.id
         let user = await AccountModel.findById(id)
