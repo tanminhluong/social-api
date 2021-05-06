@@ -166,14 +166,13 @@ Router.put('/delete/comment/:cmt_id',async(req,res)=>{
             }
         }
         deletecmt = await Newfeed.findOneAndUpdate(
-            {"commentlist.cmt_id" : mongoose.Types.ObjectId(cmt_id)},
+            {"commentlist._id" : mongoose.Types.ObjectId(cmt_id)},
             {$pull: { 
                 commentlist: {
-                    cmt_id: mongoose.Types.ObjectId(cmt_id)
+                    _id: mongoose.Types.ObjectId(cmt_id)
                 }
             }},
             { safe: true, multi:true })
-            console.log(deletecmt)
         await Newfeed.findByIdAndUpdate(deletecmt._id,{$inc:{commentcount:-1}},{useFindAndModify:false})
         return res.json({code:0,message:'Xóa bình luận bài đăng thành công'})
     
