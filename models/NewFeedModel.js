@@ -11,8 +11,6 @@ const NewFeedSchema = new Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Account'
         },
-        user_name: String,
-        avatar: String
     },
     likecount:Number,
     likelist:[Object],

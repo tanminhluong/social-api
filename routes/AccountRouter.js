@@ -189,8 +189,7 @@ Router.put('/rename',CheckLogin,async(req,res)=>{
 
 Router.put('/update/avatar',CheckLogin,upload.single("image"),async(req,res)=>{
     try{
-        let id = req.params.id
-        let user = await AccountModel.findById(id)
+        let user = await AccountModel.findById(req.user.id)
         console.log(user.id_avatar)
         await cloudinary.uploader.destroy(user.id_avatar)
         let result = await cloudinary.uploader.upload(req.file.path)
