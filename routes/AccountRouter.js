@@ -132,6 +132,59 @@ Router.put('/update/user',CheckLogin,async(req,res)=>{
 
 })
 
+Router.put('/repassword',CheckLogin,async(req,res)=>{
+    try{
+        let repassword = req.body
+        let id = req.user.id
+        let role = req.user.role
+        if (role === "student"){
+            throw new Error("Tài khoản không cung cấp mật khẩu")
+        }
+        let data = {
+            password: repassword,
+        }
+        await AccountModel.findByIdAndUpdate(id,data)
+        
+        return res.json({
+            code:0,
+            message:"cập nhập thành công"
+        })
+    }catch(err){
+        return res.json({code:1,message:err.message})
+    }
+})
+
+Router.put('/rename',CheckLogin,async(req,res)=>{
+    try{
+        let rename = req.body
+        let id = req.user.id
+        let data = {
+            user_name: rename,
+        }
+        account = await AccountModel.findByIdAndUpdate(id,data)
+        const {JWT_SECRET} = process.env
+        jwt.sign({
+            id:account.id,
+            user:account.user,
+            user_name:account.user_name,
+            avatar:account.avatar, 
+            role:account.role,
+            faculty:account.faculty
+        },JWT_SECRET,{
+            expiresIn:'3h'
+        },(err,token)=>{
+            if(err) throw err
+            return res.json({
+                code:0,
+                message:"cập nhập thành công",
+                token: token
+            })
+        })
+    }catch(err){
+        return res.json({code:1,message:err.message})
+    }
+})
+
 Router.put('/update/avatar',CheckLogin,upload.single("image"),async(req,res)=>{
     try{
         let user = await AccountModel.findById(req.user.id)
