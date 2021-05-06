@@ -248,7 +248,7 @@ Router.put('/update/image/:id',upload.single("image"),async(req,res)=>{
         }
         let feed = await Newfeed.findById(id)
         await cloudinary.uploader.destroy(feed.cloudinary_id)
-        let result = await cloudinary.uploader(req.file.path)
+        let result = await cloudinary.uploader.upload(req.file.path)
         let data = {
             content:content,
             image: result.secure_url,

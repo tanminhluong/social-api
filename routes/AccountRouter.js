@@ -187,11 +187,13 @@ Router.put('/rename',CheckLogin,async(req,res)=>{
     }
 })
 
-Router.put('/update/avatar',CheckLogin,upload.single("image"),async(req,res)=>{
+Router.put('/update/avatar/:id',CheckLogin,upload.single("image"),async(req,res)=>{
     try{
-        let user = await AccountModel.findById(req.user.id)
+        let id = req.params.id
+        let user = await AccountModel.findById(id)
+        console.log(user.id_avatar)
         await cloudinary.uploader.destroy(user.id_avatar)
-        let result = await cloudinary.uploader(req.file.path)
+        let result = await cloudinary.uploader.upload(req.file.path)
         let data = {
             avatar: result.secure_url,
             id_avatar: result.public_id
