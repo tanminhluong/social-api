@@ -91,17 +91,24 @@ Router.put('/like/:idtus',async(req,res)=>{
     try{
         let {id,user_name} = req.user
         let idtus = req.params.idtus
-        let updateLike = await Newfeed.findByIdAndUpdate(idtus,{$inc:{likecount:1}},{useFindAndModify:false})
-        updateLike.likelist.push({id_user:id,user_name:user_name})
-        await updateLike.save()
-        
-        let test = await Newfeed.find({_id:idtus}).select('likelist.id_user -_id')
-        // forEach(let[key,values] of test) => {
-        //     console.log(Element)
-        //     console.log(Element.id_user === mongoose.Types.ObjectId("608e739d8efdfa0004decc0e"))
-        // }
 
-        // console.log(updateLike.likelist.includes("607e803329744743e4d6df30"))
+        let check = await Newfeed.find({_id:idtus,'likelist.id_user':mongoose.Types.ObjectId(id)})
+        if (check.length > 0){
+            let deletelike = await Newfeed.findOneAndUpdate(
+                {"likelist.id_user" : mongoose.Types.ObjectId(id)},
+                {$pull: { 
+                    likelist: {
+                        id_user: mongoose.Types.ObjectId(id)
+                    }
+                }},
+                { safe: true, multi:true })
+            await Newfeed.findByIdAndUpdate(deletelike._id,{$inc:{likecount:-1}},{useFindAndModify:false})
+            return res.json({code:0,message:'Xóa like bài đăng thành công'})
+        }
+
+        let updateLike = await Newfeed.findByIdAndUpdate(idtus,{$inc:{likecount:1}},{useFindAndModify:false})
+        updateLike.likelist.push({id_user:mongoose.Types.ObjectId(id),user_name:user_name})
+        await updateLike.save()
         return res.json({code:0,message:'Like bài đăng thành công'})
     }catch (err){
         return res.json({code:2,message:err.message})
