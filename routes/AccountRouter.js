@@ -134,7 +134,7 @@ Router.put('/update/user',CheckLogin,async(req,res)=>{
 
 Router.put('/repassword',CheckLogin,async(req,res)=>{
     try{
-        let repassword = req.body
+        let repassword = req.body.repassword
         let id = req.user.id
         let role = req.user.role
         if (role === "student"){
