@@ -7,6 +7,7 @@ const cors = require('cors')
 const passport = require('passport');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
+const { DateTime } = require('luxon');
 
 
 const Account = require('./models/AccountModel')
@@ -32,7 +33,8 @@ const port = process.env.PORT || 8080
 app.get('/',(req,res)=>{
     res.json({
         code:0,
-        message: 'Wellcom to my REST API'
+        message: 'Wellcom to my REST API',
+        data: DateTime.now()
     })
 })
 

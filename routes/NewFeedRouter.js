@@ -6,6 +6,7 @@ const NewFeedValidator = require('./validators/addNewfeed')
 const mongoose = require('mongoose')
 const {cloudinary} = require('../configCloud/Cloudinary')
 const upload = require('../configCloud/multer')
+const { DateTime } = require('luxon');
 
 Router.get('/',(req,res)=>{
     Newfeed.find().sort({'date': 'desc'})
@@ -134,7 +135,7 @@ Router.put('/comment/:id',async(req,res)=>{
             user_name: user_name,
             avatar: avatar,
             comment:comment,
-            time:new Date().toISOString()}
+            time: DateTime.now()}
         let updatecountcmt = await Newfeed.findByIdAndUpdate(id,{$inc:{commentcount:1}},{useFindAndModify:false})
         updatecountcmt.commentlist.push({
             _id:original_id,
