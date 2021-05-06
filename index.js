@@ -36,58 +36,17 @@ app.get('/',(req,res)=>{
     })
 })
 
-
-
-app.get('/auth/google',
-  passport.authenticate('google', { scope:
-      [ 'email', 'profile' ] }
-));
-
-app.get('/auth/google/callback',
-    passport.authenticate( 'google', {
-    failureRedirect: '/' }),
-    function(req, res) {
-        let {displayName,email}= req.user
-        console.log(req.user)
-        let verifyEmail = email.split("@")[1]
-        if(verifyEmail !=="student.tdtu.edu.vn"){
-            return res.json({code:401,message:"Tài khoản không được phép đăng nhập"})
-        }
-        
-        Account.findOne({
-            email:email,
-        })
-        .then(acc=>{
-            if(!acc){
-                let user = new Account({
-                    email:email,
-                    fullname:displayName,
-                    role:"student"
-                })
-                return user.save()
-            }
-        })
-        .then(()=>{
-            const {JWT_SECRET} = process.env
-            jwt.sign({
-                email:email,
-                fullname:displayName,
-                role:"student"
-            },JWT_SECRET,{
-                expiresIn:'1h'
-            },(err,token)=>{
-                if(err) throw err
-                return res.json({
-                    code:0,
-                    message:"Đăng nhập thành công",
-                    token: token
-                })
-            })
-        })
-        .catch(e=>{
-            return res.status(401).json({code:2,message:"Đăng nhập thất bại:"+ e.message})
-        })
-})
+io.on('connection', function(socket){
+    socket.on('notiadd', (data) => {
+        console.log(data);
+    })
+    
+    console.log('a user connected');
+    socket.on('disconnect', function(){
+      console.log('user disconnected');
+    })
+  
+});
 
 app.use('/role',RoleRouter)
 app.use('/notification',CheckLogin,NotificationrRouter)

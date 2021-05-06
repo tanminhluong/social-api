@@ -380,20 +380,6 @@ Router.get('/dateSort/:sod/:eod/:page',async(req,res)=>{
 })
 
 
-const server = require('http').createServer(Router);
-const io = require('socket.io')(server);
-io.on('connection', function(socket){
-    socket.on('notiadd', (data) => {
-        console.log(data);
-    })
-    
-    console.log('a user connected');
-    socket.on('disconnect', function(){
-      console.log('user disconnected');
-    })
-  
-});
-
 Router.post('/add',CheckLogin,NotificationValidator,async(req,res)=>{
     try{
         let result = validationResult(req)
