@@ -107,15 +107,6 @@ Router.put('/update/user',CheckLogin,async(req,res)=>{
             gender:gender
         },{new:true})
 
-        // noti = await Notification.find({
-
-        // })
-
-        // let newUnread = new unreadModel({
-        //     user_id: req.user.id
-        //     unread:
-        // })
-
         const {JWT_SECRET} = process.env
         jwt.sign({
             id:account.id,
@@ -150,7 +141,7 @@ Router.put('/update/avatar',CheckLogin,upload.single("image"),async(req,res)=>{
             avatar: result.secure_url,
             id_avatar: result.public_id
         }
-        account = await AccountModel.findByIdAndUpdate(req.user.id,data,req)
+        account = await AccountModel.findByIdAndUpdate(req.user.id,data)
         const {JWT_SECRET} = process.env
         jwt.sign({
             id:account.id,

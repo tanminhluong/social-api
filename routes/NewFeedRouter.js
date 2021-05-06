@@ -219,6 +219,41 @@ Router.post('/add/image',upload.single('image'),async(req,res)=>{
     }
 })
 
+Router.put('/update/:id',async(req,res)=>{
+    try{
+        let {id} = req.params
+        let {content,linkyoutube} = req.body
+        let data = {
+            content:content,
+            linkyoutube:linkyoutube
+        }
+        await Newfeed.findByIdAndUpdate(id,data,{new:true})   
+    }catch(err){
+        return res.json({code:1,message:err.message})
+    }
+})
+
+Router.put('/update/image/:id',upload.single("image"),async(req,res)=>{
+    try{
+        let {id} = req.params
+        let {content} = req.body
+        if(!content){
+            throw new Error("không có caption")
+        }
+        let feed = await Newfeed.findById(id)
+        await cloudinary.uploader.destroy(feed.cloudinary_id)
+        let result = await cloudinary.uploader(req.file.path)
+        let data = {
+            content:content,
+            image: result.secure_url,
+            idimage: result.public_id
+        }
+        await Newfeed.findByIdAndUpdate(id,data,{new:true})
+    }catch(err){
+        return res.json({code:1,message:err.message})
+    }
+})
+
 Router.delete("/delete/:id",async(req,res)=>{
     try{
         let idTus = req.params.id
