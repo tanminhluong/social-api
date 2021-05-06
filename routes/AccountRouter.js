@@ -190,7 +190,7 @@ Router.put('/rename',CheckLogin,async(req,res)=>{
 Router.put('/update/avatar',CheckLogin,upload.single("image"),async(req,res)=>{
     try{
         let user = await AccountModel.findById(req.user.id)
-        await cloudinary.uploader.destroy(user.cloudinary_id)
+        await cloudinary.uploader.destroy(user.id_avatar)
         let result = await cloudinary.uploader(req.file.path)
         let data = {
             avatar: result.secure_url,
