@@ -142,7 +142,7 @@ Router.put('/repassword',CheckLogin,async(req,res)=>{
         }
         let password =bcrypt.hash(repassword,10)
         let data = {
-            password: repassword,
+            password: password,
         }
         await AccountModel.findByIdAndUpdate(id,data)
         
