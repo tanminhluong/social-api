@@ -5,6 +5,8 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const {cloudinary} = require('../configCloud/Cloudinary')
 const upload = require('../configCloud/multer')
+const unreadModel = require('../models/UnreadModel')
+const Notification = require('../models/NotificationModel')
 
 const CheckLogin = require('../auth/CheckLogin')
 const AccountModel= require('../models/AccountModel')
@@ -14,6 +16,29 @@ Router.get('/',(req,res)=>{
     res.json({
         code:0,
         message: 'Account router'
+    })
+})
+
+Router.get('/user/:id',(req,res)=>{
+    let {id} = req.params
+    if(!id){
+        return res.json({code:1,message:"Không có thông tin user"})
+    }
+
+    AccountModel.findById(id)
+    .then(a=>{
+        if(a){
+            return res.json({code:0,message:"Đã tìm thấy tài khoản user",data:a})
+
+        }else{
+            return res.json({code:2,message:"Không tìm thấy tài khoản user"})
+        }
+    })
+    .catch(e=>{
+        if(e.message.includes('Cast to Object failed')){
+            return res.json({code:3,message:"Đây không phải id hợp lệ"})
+        }
+        return res.json({code:3,message:e.message})
     })
 })
 
@@ -52,6 +77,7 @@ Router.post('/login',loginValidator,(req,res)=>{
                     token: token
                 })
             })
+
         })
         .catch(e=>{
             return res.status(401).json({code:2,message:"Đăng nhập thất bại:"+ e.message})
@@ -80,6 +106,16 @@ Router.put('/update/user',CheckLogin,async(req,res)=>{
             phone:phone,
             gender:gender
         },{new:true})
+
+        // noti = await Notification.find({
+
+        // })
+
+        // let newUnread = new unreadModel({
+        //     user_id: req.user.id
+        //     unread:
+        // })
+
         const {JWT_SECRET} = process.env
         jwt.sign({
             id:account.id,
@@ -92,6 +128,7 @@ Router.put('/update/user',CheckLogin,async(req,res)=>{
             expiresIn:'3h'
         },(err,token)=>{
             if(err) throw err
+
             return res.json({
                 code:0,
                 message:"cập nhập thành công",

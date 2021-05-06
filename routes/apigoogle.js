@@ -6,7 +6,7 @@ const AccountModel = require('../models/AccountModel')
 const mongoose = require('mongoose')
 const client = new OAuth2Client("173768816222-a3th16lqbckuej5epilhsnv3tg0l031q.apps.googleusercontent.com")
 const {cloudinary} = require('../configCloud/Cloudinary')
-const upload = require('../configCloud/multer')
+
 
 Router.get('/student',(req,res)=>{
     AccountModel.find({role:"student"})
@@ -64,6 +64,7 @@ Router.post('/googlelogin',async(req,res)=>{
                                     code:2,message:err.message
                                 })
                             }
+
                             const {JWT_SECRET} = process.env
                             const token = jwt.sign({
                                 id:data.id,

@@ -95,12 +95,16 @@ Router.put('/like/:idtus',async(req,res)=>{
         updateLike.likelist.push({id_user:id,user_name:user_name})
         await updateLike.save()
         
-        // let test = await Newfeed.find({_id:idtus},'likelist')
-        // console.log(test)
+        let test = await Newfeed.find({_id:idtus}).select('likelist.id_user -_id')
+        // forEach(let[key,values] of test) => {
+        //     console.log(Element)
+        //     console.log(Element.id_user === mongoose.Types.ObjectId("608e739d8efdfa0004decc0e"))
+        // }
+
         // console.log(updateLike.likelist.includes("607e803329744743e4d6df30"))
         return res.json({code:0,message:'Like bài đăng thành công'})
     }catch (err){
-        return res.json({code:2,message:err})
+        return res.json({code:2,message:err.message})
     }
 })
 
