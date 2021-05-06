@@ -129,14 +129,14 @@ Router.put('/comment/:id',async(req,res)=>{
         if(!comment){   
             throw new Error ("Không nhận được thông tin bình luận")
         }
-        let updatecountcmt = await Newfeed.findByIdAndUpdate(id,{$inc:{commentcount:1}},{useFindAndModify:false})
-        updatecountcmt.commentlist.push({
-            _id:original_id,
+        let data = {_id:original_id,
             id_user:id_user,
             user_name: user_name,
             avatar: avatar,
             comment:comment,
-            time:new Date().toISOString()})
+            time:new Date().toISOString()}
+        let updatecountcmt = await Newfeed.findByIdAndUpdate(id,{$inc:{commentcount:1}},{useFindAndModify:false})
+        updatecountcmt.commentlist.push({data})
         await updatecountcmt.save()
         return res.json({code:0,message:'Bình luận bài đăng thành công'})
     }catch(err){
@@ -150,7 +150,6 @@ Router.put('/delete/comment/:cmt_id',async(req,res)=>{
         if(!cmt_id){
             throw new Error ("không có thông tin id của bình luật cần xóa")
         }
-
         let IDuserCheck = req.user.id
 
         if(req.user.role ==="student"){
