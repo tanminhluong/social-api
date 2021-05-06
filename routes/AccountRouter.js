@@ -140,7 +140,7 @@ Router.put('/repassword',CheckLogin,async(req,res)=>{
         if (role === "student"){
             throw new Error("Tài khoản không cung cấp mật khẩu")
         }
-        let password =bcrypt.hash(repassword,10)
+        let password = await bcrypt.hash(repassword,10)
         let data = {
             password: password,
         }
