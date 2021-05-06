@@ -157,6 +157,9 @@ Router.put('/repassword',CheckLogin,async(req,res)=>{
 Router.put('/rename',CheckLogin,async(req,res)=>{
     try{
         let rename = req.body
+        if(!rename){
+            throw new Error("không có tên mới")
+        }
         let id = req.user.id
         let data = {
             user_name: rename,
