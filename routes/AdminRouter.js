@@ -114,8 +114,7 @@ Router.get('/search_user/:user',async(req,res)=>{
         let User = await AccountModel.find({user:{"$regex":user,"$options":"i"}})
         return res.json({
             code:0,
-            message:"Đọc danh sách thông báo search thành công",
-            total:(Math.ceil(notiLength/10)),
+            message:"Đọc danh sách user thành công",
             data:User
         })
     }catch(err){
