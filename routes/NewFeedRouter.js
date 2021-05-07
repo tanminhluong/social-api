@@ -187,12 +187,11 @@ Router.post('/add',async(req,res)=>{
             linkyoutube:linkyoutube
         })
         await newTus.save()
-        let newpost = await AccountModel.find({_id:newTus._id}).populate('user').populate('commentlist.user_cmt')
+
+        let newpost = await Newfeed.find(mongoose.Types.ObjectId(newTus._id)).populate('user')
         return res.json({
                             code:0,message:'Tạo bài đăng thành công',
-                            data:{
-                                    feed:newpost,
-                                }
+                            data:newpost,
                         })
     }catch(error){
         return res.json({code:1,message:error.message})
@@ -213,7 +212,7 @@ Router.post('/add/image',upload.single('image'),async(req,res)=>{
             commentcount:0
         })
         await newTus.save()
-        let newpost = await Newfeed.find({_id:newTus._id}).populate('user').populate('commentlist.user_cmt')
+        let newpost = await Newfeed.find({_id:mongoose.Types.ObjectId(newTus._id)}).populate('user')
         return res.json({
                             code:0,message:'Tạo bài đăng thành công',
                             data:newpost,
