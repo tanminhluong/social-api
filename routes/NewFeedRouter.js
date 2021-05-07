@@ -200,19 +200,19 @@ Router.post('/add',async(req,res)=>{
     }
 })
 
-Router.put('/update/comment/:id_cmt',async(req,res)=>{
-    try{
-        let {id_cmt} = req.params
-        let {comment} = req.body
-        let updatecmt = await Newfeed.find(
-            {"commentlist.cmt_id" : mongoose.Types.ObjectId(id_cmt)},
-            'commentlist.comment -_id')
-        console.log(updatecmt)
-        res.send('done')
-    }catch(err){
-        return res.json({code:1,message:error.message})
-    }
-})
+// Router.put('/update/comment/:id_cmt',async(req,res)=>{
+//     try{
+//         let {id_cmt} = req.params
+//         let {comment} = req.body
+//         let updatecmt = await Newfeed.find(
+//             {"commentlist.cmt_id" : mongoose.Types.ObjectId(id_cmt)},
+//             'commentlist.comment -_id')
+//         console.log(updatecmt)
+//         res.send('done')
+//     }catch(err){
+//         return res.json({code:1,message:error.message})
+//     }
+// })
 
 Router.post('/add/image',upload.single('image'),async(req,res)=>{
     try{
@@ -247,8 +247,8 @@ Router.put('/update/:id',async(req,res)=>{
             content:content,
             linkyoutube:linkyoutube
         }
-        await Newfeed.findByIdAndUpdate(id,data,{new:true}) 
-        return res.json({code:0,message:"Cập nhật thành công"})  
+        let feed_update = await Newfeed.findByIdAndUpdate(id,data,{new:true}) 
+        return res.json({code:0,message:"Cập nhật thành công",data:feed_update})  
     }catch(err){
         return res.json({code:1,message:err.message})
     }
@@ -269,8 +269,8 @@ Router.put('/update/image/:id',upload.single("image"),async(req,res)=>{
             image: result.secure_url,
             idimage: result.public_id
         }
-        await Newfeed.findByIdAndUpdate(id,data,{new:true})
-        return res.json({code:0,message:"Cập nhật thành công"}) 
+        let feed_update = await Newfeed.findByIdAndUpdate(id,data,{new:true})
+        return res.json({code:0,message:"Cập nhật thành công",data:feed_update}) 
     }catch(err){
         return res.json({code:1,message:err.message})
     }
