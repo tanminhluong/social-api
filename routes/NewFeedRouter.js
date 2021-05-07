@@ -138,7 +138,7 @@ Router.post('/comment/:id',async(req,res)=>{
         })
         
         await updatecountcmt.save()
-        let cmt_list = await Newfeed.find(id,'-_id commentlist').populate('user','_id user_name avatar')
+        let cmt_list = await Newfeed.find(id,'-_id commentlist').populate('user','_id user_name avatar').sort({'date': 'desc'})
         return res.json({code:0,message:'Bình luận bài đăng thành công'},{
             data:cmt_list
         })
