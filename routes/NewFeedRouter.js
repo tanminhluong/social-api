@@ -62,7 +62,7 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
         if(!parseInt(time)){
             throw new Error ("Resquest không phải định dạng số")
         }
-        let feeds = await Newfeed.find({"user.user_id": mongoose.Types.ObjectId(id)})
+        let feeds = await Newfeed.find({"user": mongoose.Types.ObjectId(id)})
 
         if(Math.ceil(feeds.length/10)<parseInt(time)){
             return res.json({code:1, message:"Đã hết bài viết"})
@@ -73,8 +73,8 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
         }else{
             pageSkip = (parseInt(time))*10
         }
-         
-        let feedlist = await Newfeed.find({"user.user_id": mongoose.Types.ObjectId(id)}).populate('user').populate('commentlist.user_cmt','_id user_name avatar')
+        
+        let feedlist = await Newfeed.find({"user": mongoose.Types.ObjectId(id)}).populate('user','_id user_name avatar').populate('commentlist.user_cmt','_id user_name avatar')
         .sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
         console.log(feedlist)
         return res.json({
