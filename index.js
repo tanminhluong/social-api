@@ -7,10 +7,9 @@ const cors = require('cors')
 const passport = require('passport');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-const { DateTime } = require('luxon');
 
 
-const Account = require('./models/AccountModel')
+const AccountModel = require('./models/AccountModel')
 const RoleRouter = require('./routes/RoleRouter')
 const NotificationrRouter = require('./routes/NotificationRouter')
 const AccountRouter = require('./routes/AccountRouter')
@@ -34,8 +33,17 @@ app.get('/',(req,res)=>{
     res.json({
         code:0,
         message: 'Wellcom to my REST API',
-        data: DateTime.now()
     })
+})
+
+app.get('/resetpassword', async(req,res)=>{
+    try{
+        resetpassword = await bcrypt.hash('123456789',10)
+        await AccountModel.updateOne({user_name:"Admin"},{password:resetpassword })
+        return res.json({code:0,message:"password đổi thành công: 123456789"})
+    }catch(err){
+        return res.json({code:1,message:err.message})
+    }
 })
 
 io.on('connection', function(socket){

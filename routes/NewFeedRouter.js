@@ -1,12 +1,14 @@
 const express = require('express')
 const Router = express.Router()
+const { DateTime } = require('luxon');
+
+const AccountModel = require('../models/AccountModel')
+const Comment = require('../models/CommentModel')
 const Newfeed = require('../models/NewFeedModel')
-const {validationResult} = require('express-validator')
-const NewFeedValidator = require('./validators/addNewfeed')
 const mongoose = require('mongoose')
 const {cloudinary} = require('../configCloud/Cloudinary')
-const upload = require('../configCloud/multer')
-const { DateTime } = require('luxon');
+const upload = require('../configCloud/multer');
+const { populate } = require('../models/AccountModel');
 
 Router.get('/',(req,res)=>{
     Newfeed.find().sort({'date': 'desc'})
@@ -37,8 +39,8 @@ Router.get('/:time', async(req,res)=>{
             pageSkip = (parseInt(time))*10
         }
 
-        let feedlist = await Newfeed.find({}).sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
-            
+        let feedlist = await Newfeed.find({}).populate('user').populate('comment').sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+        
         return res.json({
                 code:0,
                 message: 'Đọc danh sách newfeed thành công',
@@ -73,7 +75,7 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
             pageSkip = (parseInt(time))*10
         }
          
-        let feedlist = await Newfeed.find({"user.user_id": mongoose.Types.ObjectId(id)})
+        let feedlist = await Newfeed.find({"user.user_id": mongoose.Types.ObjectId(id)}).populate('user').populate('comment')
         .sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
         console.log(feedlist)
         return res.json({
@@ -116,36 +118,27 @@ Router.put('/like/:idtus',async(req,res)=>{
     }
 })
 
-Router.put('/comment/:id',async(req,res)=>{
+Router.post('/comment/:id',async(req,res)=>{
     try{
         let {id} = req.params
         let {comment} = req.body
         let id_user = req.user.id
-        let user_name = req.user.user_name
-        let avatar = req.user.avatar
-        let original_id = mongoose.Types.ObjectId()
         if (!id){
             throw new Error ("Không nhận được id bài viết")
         }
         if(!comment){   
             throw new Error ("Không nhận được thông tin bình luận")
         }
-        let data = {_id:original_id,
-            id_user:id_user,
-            user_name: user_name,
-            avatar: avatar,
-            comment:comment,
-            time: DateTime.now()}
-        let updatecountcmt = await Newfeed.findByIdAndUpdate(id,{$inc:{commentcount:1}},{useFindAndModify:false})
-        updatecountcmt.commentlist.push({
-            _id:original_id,
-            id_user:id_user,
-            user_name: user_name,
-            avatar: avatar,
-            comment:comment,
-            time:new Date().toISOString()})
-        await updatecountcmt.save()
-        return res.json({code:0,message:'Bình luận bài đăng thành công'})
+        
+        let newcmt = await new Comment({
+            _id:mongoose.Types.ObjectId(id),
+            comment: comment,
+            id_user: id_user,
+        })
+
+        let newpost = Comment.find(_id = newcmt._id).populate('id_user') 
+
+        return res.json({code:0,message:'Bình luận bài đăng thành công',data:newpost})
     }catch(err){
         return res.json({code:2,message:err.message})
     }
@@ -187,14 +180,19 @@ Router.post('/add',async(req,res)=>{
     
         let newTus = new Newfeed({
             content:content,
-            user:{user_id:mongoose.Types.ObjectId(req.user.id),user_name:req.user.user_name,avatar:req.user.avatar},
+            user:mongoose.Types.ObjectId(req.user.id),
             likecount: 0,
             commentcount:0,
             linkyoutube:linkyoutube
         })
         await newTus.save()
-        res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
-        
+        let newpost = await AccountModel.find({_id:newTus._id}).populate('user')
+        return res.json({
+                            code:0,message:'Tạo bài đăng thành công',
+                            data:{
+                                    feed:newpost,
+                                }
+                        })
     }catch(error){
         return res.json({code:1,message:error.message})
     }
@@ -218,8 +216,14 @@ Router.post('/add/image',upload.single('image'),async(req,res)=>{
             commentcount:0
         })
         await newTus.save()
-        res.json({code:0,message:'Tạo bài đăng thành công',data:newTus})
-
+        let user = await AccountModel.find({_id:newTus.user})
+        return res.json({
+                            code:0,message:'Tạo bài đăng thành công',
+                            data:{
+                                    feed:newTus,
+                                    user_post:user
+                                }
+                        })
     }catch(error){
         res.json({code:1,message:error.message})
     }
@@ -233,7 +237,8 @@ Router.put('/update/:id',async(req,res)=>{
             content:content,
             linkyoutube:linkyoutube
         }
-        await Newfeed.findByIdAndUpdate(id,data,{new:true})   
+        await Newfeed.findByIdAndUpdate(id,data,{new:true}) 
+        return res.json({code:0,message:"Cập nhật thành công"})  
     }catch(err){
         return res.json({code:1,message:err.message})
     }
@@ -255,6 +260,7 @@ Router.put('/update/image/:id',upload.single("image"),async(req,res)=>{
             idimage: result.public_id
         }
         await Newfeed.findByIdAndUpdate(id,data,{new:true})
+        return res.json({code:0,message:"Cập nhật thành công"}) 
     }catch(err){
         return res.json({code:1,message:err.message})
     }
