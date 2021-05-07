@@ -128,7 +128,7 @@ Router.put('/comment/:id',async(req,res)=>{
         if(!comment){   
             throw new Error ("Không nhận được thông tin bình luận")
         }
-        
+        let original_id = mongoose.Types.ObjectId()
         let updatecountcmt = await Newfeed.findByIdAndUpdate(id,{$inc:{commentcount:1}},{useFindAndModify:false})
         updatecountcmt.commentlist.push({
             cmt_id:original_id,
