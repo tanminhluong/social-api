@@ -7,7 +7,7 @@ const cors = require('cors')
 const passport = require('passport');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-
+const { DateTime } = require('luxon');
 
 const AccountModel = require('./models/AccountModel')
 const RoleRouter = require('./routes/RoleRouter')
@@ -33,6 +33,7 @@ app.get('/',(req,res)=>{
     res.json({
         code:0,
         message: 'Wellcom to my REST API',
+        time:DateTime.now()
     })
 })
 

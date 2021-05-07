@@ -184,7 +184,8 @@ Router.post('/add',async(req,res)=>{
             user:mongoose.Types.ObjectId(req.user.id),
             likecount: 0,
             commentcount:0,
-            linkyoutube:linkyoutube
+            linkyoutube:linkyoutube,
+            date:DateTime.now()
         })
         await newTus.save()
 
@@ -209,7 +210,8 @@ Router.post('/add/image',upload.single('image'),async(req,res)=>{
             likecount: 0,
             image:imageCloud.secure_url,
             idimage:imageCloud.public_id,
-            commentcount:0
+            commentcount:0,
+            date:DateTime.now()
         })
         await newTus.save()
         let newpost = await Newfeed.find({_id:mongoose.Types.ObjectId(newTus._id)}).populate('user')
