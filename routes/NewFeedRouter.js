@@ -8,7 +8,7 @@ const Newfeed = require('../models/NewFeedModel')
 const mongoose = require('mongoose')
 const {cloudinary} = require('../configCloud/Cloudinary')
 const upload = require('../configCloud/multer');
-const { populate } = require('../models/AccountModel');
+
 
 Router.get('/',(req,res)=>{
     Newfeed.find().sort({'date': 'desc'})
@@ -39,7 +39,7 @@ Router.get('/:time', async(req,res)=>{
             pageSkip = (parseInt(time))*10
         }
 
-        let feedlist = await Newfeed.find({}).populate('user').populate('comment').sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+        let feedlist = await Newfeed.find({}).populate('user').populate('commentlist.user_cmt').sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
         
         return res.json({
                 code:0,
@@ -75,7 +75,7 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
             pageSkip = (parseInt(time))*10
         }
          
-        let feedlist = await Newfeed.find({"user.user_id": mongoose.Types.ObjectId(id)}).populate('user').populate('comment')
+        let feedlist = await Newfeed.find({"user.user_id": mongoose.Types.ObjectId(id)}).populate('user').populate('commentlist.user_cmt')
         .sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
         console.log(feedlist)
         return res.json({
@@ -130,15 +130,16 @@ Router.post('/comment/:id',async(req,res)=>{
             throw new Error ("Không nhận được thông tin bình luận")
         }
         
-        let newcmt = await new Comment({
-            _id:mongoose.Types.ObjectId(id),
-            comment: comment,
-            id_user: id_user,
-        })
+        let updatecountcmt = await Newfeed.findByIdAndUpdate(id,{$inc:{commentcount:1}},{useFindAndModify:false})
+        updatecountcmt.commentlist.push({
+            cmt_id:original_id,
+            user_id:id_user,
+            comment:comment,
+            time: DateTime.now()})
+        
+            await updatecountcmt.save()
 
-        let newpost = Comment.find(_id = newcmt._id).populate('id_user') 
-
-        return res.json({code:0,message:'Bình luận bài đăng thành công',data:newpost})
+        return res.json({code:0,message:'Bình luận bài đăng thành công'})
     }catch(err){
         return res.json({code:2,message:err.message})
     }
@@ -186,7 +187,7 @@ Router.post('/add',async(req,res)=>{
             linkyoutube:linkyoutube
         })
         await newTus.save()
-        let newpost = await AccountModel.find({_id:newTus._id}).populate('user')
+        let newpost = await AccountModel.find({_id:newTus._id}).populate('user').populate('commentlist.user_cmt')
         return res.json({
                             code:0,message:'Tạo bài đăng thành công',
                             data:{
@@ -205,24 +206,17 @@ Router.post('/add/image',upload.single('image'),async(req,res)=>{
         const imageCloud = await cloudinary.uploader.upload(req.file.path)
         let newTus = new Newfeed({
             content:content,
-            user:{
-                user_id:mongoose.Types.ObjectId(req.user.id),
-                user_name:req.user.user_name,
-                avatar:req.user.avatar
-            },
+            user:mongoose.Types.ObjectId(req.user.id),
             likecount: 0,
             image:imageCloud.secure_url,
             idimage:imageCloud.public_id,
             commentcount:0
         })
         await newTus.save()
-        let user = await AccountModel.find({_id:newTus.user})
+        let newpost = await Newfeed.find({_id:newTus._id}).populate('user').populate('commentlist.user_cmt')
         return res.json({
                             code:0,message:'Tạo bài đăng thành công',
-                            data:{
-                                    feed:newTus,
-                                    user_post:user
-                                }
+                            data:newpost,
                         })
     }catch(error){
         res.json({code:1,message:error.message})

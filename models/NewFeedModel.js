@@ -12,6 +12,16 @@ const NewFeedSchema = new Schema({
     },
     likecount:Number,
     likelist:[Object],
+    commentcount:Number,
+    commentlist:{
+        cmt_id:  mongoose.Schema.Types.ObjectId,
+        user_id:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Account'
+        },
+        comment: String,
+        date:{type: Date, default: DateTime.now()}
+    },
     linkyoutube:String,
     date:{type: Date, default: DateTime.now()}
 })
