@@ -20,7 +20,7 @@ const NewFeedSchema = new Schema({
             ref: 'Account'
         },
         comment: String,
-        date:{type: Date}
+        date:{type: Date, default: Date.now}
     },
     linkyoutube:String,
     date:{type: Date, default: Date.now}
