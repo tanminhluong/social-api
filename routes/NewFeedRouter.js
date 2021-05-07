@@ -134,7 +134,7 @@ Router.post('/comment/:id',async(req,res)=>{
             cmt_id:original_id,
             user_id:id_user,
             comment:comment,
-
+            date: Date.now
         })
         
             await updatecountcmt.save()
