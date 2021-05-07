@@ -117,7 +117,7 @@ Router.put('/like/:idtus',async(req,res)=>{
     }
 })
 
-Router.post('/comment/:id',async(req,res)=>{
+Router.put('/comment/:id',async(req,res)=>{
     try{
         let {id} = req.params
         let {comment} = req.body
