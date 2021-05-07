@@ -23,7 +23,7 @@ const NewFeedSchema = new Schema({
         date:{type: Date}
     },
     linkyoutube:String,
-    date:{type: Date}
+    date:{type: Date, default: Date.now}
 })
 
 module.exports = mongoose.model('NewFeed',NewFeedSchema)
