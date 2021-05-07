@@ -39,7 +39,7 @@ Router.get('/:time', async(req,res)=>{
             pageSkip = (parseInt(time))*10
         }
 
-        let feedlist = await Newfeed.find({}).populate('user').populate('commentlist.user_cmt','_id user_name avatar').sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
+        let feedlist = await Newfeed.find({}).populate('user').populate('commentlist.user_id','_id user_name avatar').sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
         return res.json({
                 code:0,
                 message: 'Đọc danh sách newfeed thành công',
