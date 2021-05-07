@@ -108,6 +108,21 @@ Router.delete('/user/:id',(req,res)=>{
     })
 })
 
+Router.get('/search_user/:user',async(req,res)=>{
+    try{    
+        let {user} = req.params
+        let User = await AccountModel.find({user:{"$regex":user,"$options":"i"}})
+        return res.json({
+            code:0,
+            message:"Đọc danh sách thông báo search thành công",
+            total:(Math.ceil(notiLength/10)),
+            data:User
+        })
+    }catch(err){
+        return res.json({code:1 , messages:err.message})
+    }      
+})
+
 Router.put("/user/:id",(req,res)=>{
     let {id} = req.params
     if(!id){
@@ -116,7 +131,9 @@ Router.put("/user/:id",(req,res)=>{
 
     let supportedFields = ['password','faculty']
     let updateData = req.body
-
+    if (updateData.password.length < 6){
+        throw new Error("Password vui lòng hơn 6 ký tự")
+    }
     for (field in updateData){
         if(!supportedFields.includes(field)){
             delete updateData[field]
