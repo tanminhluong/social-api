@@ -111,7 +111,7 @@ Router.delete('/user/:id',(req,res)=>{
 Router.get('/search_user/:user',async(req,res)=>{
     try{    
         let {user} = req.params
-        let User = await AccountModel.find({user:{"$regex":user,"$options":"i"}})
+        let User = await AccountModel.find({user:{"$regex":user,"$options":"i"},role:"user"})
         return res.json({
             code:0,
             message:"Đọc danh sách user thành công",
