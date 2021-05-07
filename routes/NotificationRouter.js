@@ -1,5 +1,6 @@
 const express = require('express')
 const Router = express.Router()
+const mongoose = require('mongoose')
 const Notification = require('../models/NotificationModel')
 const {validationResult} = require('express-validator')
 const CheckLogin = require('../auth/CheckLogin')
@@ -7,6 +8,7 @@ const NotificationValidator = require('./validators/NotificationValidator')
 const PageValidator = require('./validators/NotificationPageValidator')
 const endOfDay=  require('date-fns/endOfDay')
 const startOfDay = require('date-fns/startOfDay')
+const AccountModel = require('../models/AccountModel')
 
 Router.get('/:id',(req,res)=>{
     let {id} = req.params
@@ -419,6 +421,54 @@ Router.post('/add',CheckLogin,NotificationValidator,async(req,res)=>{
     
 })
 
+Router.put('/update/:id',async(req,res)=>{
+    try{    
+        let {id} = req.params
+        let {title,content,description,faculty} = req.body
+        let role = req.user.role
+        if(role ==="student"){
+            throw new Error("Tài khoản không có quyền này")
+        }
+        if(role === "user"){
+            user_check = await AccountModel.find({_id:mongoose.Types.ObjectId(req.user.id)},'faculty')
+            noti = await Notification.find({_id:mongoose.Types.ObjectId(id)}, 'role')
+            if(!user_check[0].faculty.includes(noti[0].role )){
+                throw new Error("Tài khoản không có quyền của phòng/khoa này")
+            }
+        }
+        let data ={
+            title:title,
+            content:content,
+            description:description,
+            role:faculty,
+        }
+        await Notification.findByIdAndUpdate({_id:mongoose.Types.ObjectId(id)},data,{new:true})
+        return res.json({code:0,message:"Xóa thông báo thành công"})
+    }catch(err){
+        return res.json({code:1,message:err.message})
+    }
+})
 
+Router.delete('/delete/:id',async(req,res)=>{
+    try{    
+        let {id} = req.params
+        let role = req.user.role
+        if(role ==="student"){
+            throw new Error("Tài khoản không có quyền này")
+        }
+        if(role === "user"){
+            user_check = await AccountModel.find({_id:mongoose.Types.ObjectId(req.user.id)},'faculty')
+            noti = await Notification.find({_id:mongoose.Types.ObjectId(id)}, 'role')
+            if(!user_check[0].faculty.includes(noti[0].role )){
+                throw new Error("Tài khoản không có quyền của phòng/khoa này")
+            }
+        }
+
+        await Notification.findByIdAndDelete({_id:mongoose.Types.ObjectId(id)})
+        return res.json({code:0,message:"Xóa thông báo thành công"})
+    }catch(err){
+        return res.json({code:1,message:err.message})
+    }
+})
 
 module.exports = Router

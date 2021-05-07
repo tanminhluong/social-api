@@ -100,7 +100,7 @@ Router.put('/like/:idtus',async(req,res)=>{
             let deletelike = await Newfeed.findOneAndUpdate(
                 {_id:idtus,"likelist.id_user" : mongoose.Types.ObjectId(id)},
                 {$pull: { 
-                    likelist: {
+                    likelist: { 
                         id_user: mongoose.Types.ObjectId(id)
                     }
                 }},
@@ -196,6 +196,20 @@ Router.post('/add',async(req,res)=>{
                             data:newpost,
                         })
     }catch(error){
+        return res.json({code:1,message:error.message})
+    }
+})
+
+Router.put('/update/comment/:id_cmt',async(req,res)=>{
+    try{
+        let {id_cmt} = req.params
+        let {comment} = req.body
+        let updatecmt = await Newfeed.find(
+            {"commentlist.cmt_id" : mongoose.Types.ObjectId(id_cmt)},
+            'commentlist.comment -_id')
+        console.log(updatecmt)
+        res.send('done')
+    }catch(err){
         return res.json({code:1,message:error.message})
     }
 })
