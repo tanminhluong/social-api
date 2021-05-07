@@ -39,8 +39,7 @@ Router.get('/:time', async(req,res)=>{
             pageSkip = (parseInt(time))*10
         }
 
-        let feedlist = await Newfeed.find({}).populate('user').populate('commentlist.user_cmt').sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
-        
+        let feedlist = await Newfeed.find({}).populate('user').populate('commentlist.user_cmt','_id user_name avatar').sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
         return res.json({
                 code:0,
                 message: 'Đọc danh sách newfeed thành công',
@@ -75,7 +74,7 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
             pageSkip = (parseInt(time))*10
         }
          
-        let feedlist = await Newfeed.find({"user.user_id": mongoose.Types.ObjectId(id)}).populate('user').populate('commentlist.user_cmt')
+        let feedlist = await Newfeed.find({"user.user_id": mongoose.Types.ObjectId(id)}).populate('user').populate('commentlist.user_cmt','_id user_name avatar')
         .sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
         console.log(feedlist)
         return res.json({
@@ -135,7 +134,8 @@ Router.post('/comment/:id',async(req,res)=>{
             cmt_id:original_id,
             user_id:id_user,
             comment:comment,
-            time: DateTime.now()})
+            time: Date.now
+        })
         
             await updatecountcmt.save()
 
@@ -189,7 +189,7 @@ Router.post('/add',async(req,res)=>{
         })
         await newTus.save()
 
-        let newpost = await Newfeed.find(mongoose.Types.ObjectId(newTus._id)).populate('user')
+        let newpost = await Newfeed.find(mongoose.Types.ObjectId(newTus._id)).populate('user','_id user_name avatar')
         return res.json({
                             code:0,message:'Tạo bài đăng thành công',
                             data:newpost,
@@ -214,7 +214,7 @@ Router.post('/add/image',upload.single('image'),async(req,res)=>{
             date:Date.now
         })
         await newTus.save()
-        let newpost = await Newfeed.find({_id:mongoose.Types.ObjectId(newTus._id)}).populate('user')
+        let newpost = await Newfeed.find({_id:mongoose.Types.ObjectId(newTus._id)}).populate('user','_id user_name avatar')
         return res.json({
                             code:0,message:'Tạo bài đăng thành công',
                             data:newpost,
