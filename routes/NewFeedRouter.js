@@ -131,7 +131,7 @@ Router.put('/comment/:id',async(req,res)=>{
             throw new Error ("Không nhận được thông tin bình luận")
         }
 
-        let original_id = mongoose.Types.ObjectId()
+        const original_id = mongoose.Types.ObjectId()
         let updatecountcmt = await Newfeed.findByIdAndUpdate(id,{$inc:{commentcount:1}},{useFindAndModify:false})
         updatecountcmt.commentlist.push({
             cmt_id:original_id,
@@ -140,8 +140,11 @@ Router.put('/comment/:id',async(req,res)=>{
             date: Date.now()
         })
         await updatecountcmt.save()
-        let cmt_list = await Newfeed.find(mongoose.Types.ObjectId(id),'commentlist').populate('commentlist.user_id','_id user_name avatar').sort({'date': 'desc'})
-        io.emit("new_comment",{data:cmt_list})
+
+        let data_cmt = await Newfeed.findOne(mongoose.Types.ObjectId(id),'commentlist').populate('commentlist.user_id','_id user_name avatar').sort({'date': 'desc'})
+        let cmt_list = data_cmt.commentlist   
+        let comment_json = cmt_list.filter(cmt => String(cmt.cmt_id)===String(original_id))
+        io.emit("new_comment",{data:comment_json})
         return res.json({code:0,message:'Bình luận bài đăng thành công',data:cmt_list})
     }catch(err){
         return res.json({code:2,message:err.message})
