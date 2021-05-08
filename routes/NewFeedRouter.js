@@ -1,9 +1,8 @@
 const express = require('express')
 const Router = express.Router()
-const { DateTime } = require('luxon');
 
 const AccountModel = require('../models/AccountModel')
-const Comment = require('../models/CommentModel')
+// const Comment = require('../models/CommentModel')
 const Newfeed = require('../models/NewFeedModel')
 const mongoose = require('mongoose')
 const {cloudinary} = require('../configCloud/Cloudinary')
@@ -117,6 +116,10 @@ Router.put('/like/:idtus',async(req,res)=>{
         return res.json({code:2,message:err.message})
     }
 })
+
+
+const server = require('http').createServer(Router)
+const io = require('socket.io')(server)
 
 Router.put('/comment/:id',async(req,res)=>{
     try{
