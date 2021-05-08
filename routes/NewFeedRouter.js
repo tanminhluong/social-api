@@ -254,6 +254,26 @@ Router.put('/update/:id',async(req,res)=>{
     }
 })
 
+Router.put('/update/new_image/:id',upload.single("image"),async(req,res)=>{
+    try{
+        let {id} = req.params
+        let {content} = req.body
+        if(!content){
+            throw new Error("không có caption")
+        }
+        let result = await cloudinary.uploader.upload(req.file.path)
+        let data = {
+            content:content,
+            image: result.secure_url,
+            idimage: result.public_id
+        }
+        let feed_update = await Newfeed.findByIdAndUpdate(id,data,{new:true})
+        return res.json({code:0,message:"Cập nhật thành công",data:feed_update})
+    }catch(err){
+        return res.json({code:1,message:err.message})
+    }
+})
+
 Router.put('/update/image/:id',upload.single("image"),async(req,res)=>{
     try{
         let {id} = req.params
