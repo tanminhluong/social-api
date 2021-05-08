@@ -4,10 +4,9 @@ const app = express()
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const cors = require('cors')
-
+const passport = require('passport');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server)
-
 const AccountModel = require('./models/AccountModel')
 const RoleRouter = require('./routes/RoleRouter')
 const NotificationrRouter = require('./routes/NotificationRouter')
