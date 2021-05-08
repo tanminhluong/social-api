@@ -123,6 +123,7 @@ Router.put('/comment/:id',async(req,res)=>{
         let {id} = req.params
         let {comment} = req.body
         let id_user = req.user.id
+        var io = req.app.get('socketio');
         if (!id){
             throw new Error ("Không nhận được id bài viết")
         }
