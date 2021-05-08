@@ -141,11 +141,11 @@ Router.put('/comment/:id',async(req,res)=>{
         await updatecountcmt.save()
         let cmt_list = await Newfeed.find(mongoose.Types.ObjectId(id),'commentlist').populate('commentlist.user_id','_id user_name avatar').sort({'date': 'desc'})
         io.emit("new_comment",{data:{
-                                            comment: comment,
-                                            user_id: id_user,
-                                            user_name: req.user.user_name,
-                                            avatar: req.user.avatar,
-                                            date: Date.now()
+                                    comment: comment,
+                                    user_id: id_user,
+                                    user_name: req.user.user_name,
+                                    avatar: req.user.avatar,
+                                    date: Date.now()
         }})
         return res.json({code:0,message:'Bình luận bài đăng thành công',data:cmt_list})
     }catch(err){
