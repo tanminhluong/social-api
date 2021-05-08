@@ -262,7 +262,7 @@ Router.put('/update/image/:id',upload.single("image"),async(req,res)=>{
             throw new Error("không có caption")
         }
         let feed = await Newfeed.findById(id)
-        await cloudinary.uploader.destroy(feed.cloudinary_id)
+        await cloudinary.uploader.destroy(feed.idimage)
         let result = await cloudinary.uploader.upload(req.file.path)
         let data = {
             content:content,
