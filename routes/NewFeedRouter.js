@@ -118,21 +118,6 @@ Router.put('/like/:idtus',async(req,res)=>{
 })
 
 
-const server = require('http').createServer(Router)
-const io = require('socket.io')(server)
-
-io.on('connection', function(socket){
-    socket.on('notiadd', (data) => {
-        console.log(data);
-    })
-    
-    console.log('a user connected to comment');
-    socket.on('disconnect', function(){
-      console.log('user disconnected to comment');
-    })
-  
-})
-
 Router.put('/comment/:id',async(req,res)=>{
     try{
         let {id} = req.params
