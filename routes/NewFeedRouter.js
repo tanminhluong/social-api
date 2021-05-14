@@ -73,7 +73,7 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
             pageSkip = (parseInt(time))*10
         }
         
-        let feedlist = await Newfeed.find({"user": mongoose.Types.ObjectId(id)}).populate('user','_id user_name avatar').populate('commentlist.user_cmt','_id user_name avatar')
+        let feedlist = await Newfeed.find({"user": mongoose.Types.ObjectId(id)}).populate('user','_id user_name avatar').populate('commentlist.user_id','_id user_name avatar')
         .sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
         console.log(feedlist)
         return res.json({
@@ -145,7 +145,7 @@ Router.put('/comment/:id',async(req,res)=>{
         let cmt_list = data_cmt.commentlist   
         let comment_json = cmt_list.filter(cmt => String(cmt.cmt_id)===String(original_id))
         io.emit("new_comment",{data:comment_json})
-        return res.json({code:0,message:'Bình luận bài đăng thành công',data:cmt_list})
+        return res.json({code:0,message:'Bình luận bài đăng thành công',data:comment_json})
     }catch(err){
         return res.json({code:2,message:err.message})
     }

@@ -402,6 +402,7 @@ Router.post('/add',CheckLogin,NotificationValidator,async(req,res)=>{
                 user:userCurrent
             })
             await newNotification.save()
+            console.log(newNotification._id)
             io.emit("new_notification",newNotification)
             return res.json({code:0,message:'Tạo thông báo thành công'})             
             }

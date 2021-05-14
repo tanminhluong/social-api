@@ -15,5 +15,6 @@ const AccountSchema = new Schema({
     password: String,
     role:String,
     faculty:Array,
+    unread:Array
 })
 module.exports = mongoose.model('Account',AccountSchema)
