@@ -27,7 +27,9 @@ Router.get('/:time', async(req,res)=>{
         if(!parseInt(time)){
             throw new Error ("Resquest không phải định dạng số")
         }
+        
         let feeds = await Newfeed.find()
+        console.log(Math.ceil(feeds.length/10))
         if(Math.ceil(feeds.length/10) < parseInt( time )){
             return res.json({code:1, message:"Đã hết bài viết"})
         }  
@@ -35,7 +37,7 @@ Router.get('/:time', async(req,res)=>{
         if(parseInt(time)===1){
             pageSkip = 0
         }else{
-            pageSkip = (parseInt(time))*10
+            pageSkip = (parseInt(time)-1)*10
         }
 
         let feedlist = await Newfeed.find({}).populate('user').populate('commentlist.user_id','_id user_name avatar').sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
@@ -62,7 +64,7 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
             throw new Error ("Resquest không phải định dạng số")
         }
         let feeds = await Newfeed.find({"user": mongoose.Types.ObjectId(id)})
-
+        
         if(Math.ceil(feeds.length/10)<parseInt(time)){
             return res.json({code:1, message:"Đã hết bài viết"})
         }
@@ -70,7 +72,7 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
         if(parseInt(time)===1){
             pageSkip = 0
         }else{
-            pageSkip = (parseInt(time))*10
+            pageSkip = (parseInt(time)-1)*10
         }
         
         let feedlist = await Newfeed.find({"user": mongoose.Types.ObjectId(id)}).populate('user','_id user_name avatar').populate('commentlist.user_id','_id user_name avatar')
@@ -144,6 +146,7 @@ Router.put('/comment/:id',async(req,res)=>{
         let data_cmt = await Newfeed.findOne(mongoose.Types.ObjectId(id),'commentlist').populate('commentlist.user_id','_id user_name avatar').sort({'date': 'desc'})
         let cmt_list = data_cmt.commentlist   
         let comment_json = await cmt_list.filter(cmt => String(cmt.cmt_id)===String(original_id))
+        console.log(comment_json)
         io.emit("new_comment",{data:comment_json})
         return res.json({code:0,message:'Bình luận bài đăng thành công',data:comment_json})
     }catch(err){
