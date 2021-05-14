@@ -146,8 +146,12 @@ Router.put('/comment/:id',async(req,res)=>{
         let data_cmt = await Newfeed.findOne(mongoose.Types.ObjectId(id),'commentlist').populate('commentlist.user_id','_id user_name avatar').sort({'date': 'desc'})
         let cmt_list = data_cmt.commentlist   
         let comment_json = await cmt_list.filter(cmt => String(cmt.cmt_id)===String(original_id))
-        console.log(comment_json)
-        io.emit("new_comment",{data:comment_json})
+
+        io.emit("new_comment",{data:{
+                                    id_posty:id,
+                                    cmt_data:comment_json
+                                }
+                })
         return res.json({code:0,message:'Bình luận bài đăng thành công',data:comment_json})
     }catch(err){
         return res.json({code:2,message:err.message})
