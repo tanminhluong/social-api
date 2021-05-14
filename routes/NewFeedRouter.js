@@ -148,7 +148,7 @@ Router.put('/comment/:id',async(req,res)=>{
         let comment_json = await cmt_list.filter(cmt => String(cmt.cmt_id)===String(original_id))
 
         io.emit("new_comment",{data:{
-                                    id_posty:id,
+                                    id_post:id,
                                     cmt_data:comment_json
                                 }
                 })
