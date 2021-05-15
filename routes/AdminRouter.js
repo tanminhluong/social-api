@@ -94,11 +94,12 @@ Router.delete('/user/:id',async(req,res)=>{
         }
 
         let Account = await AccountModel.findByIdAndUpdate(id,{
-                                                        delete:true,
+                                                        
                                                         user_name:"tài khoản không khả dụng",
                                                         avatar:"https://res.cloudinary.com/tdtimg/image/upload/v1621065055/kas5z5tfafnu1ypuwul6.png",
-                                                        password:"000"
-                                                    },{new:true})
+                                                        password:"000",
+                                                        deleted:true,
+                                                    })
         if(!Account){
             throw new Error("Không tìm thấy tài khoản user")
         }    
