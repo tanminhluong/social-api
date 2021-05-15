@@ -61,7 +61,8 @@ Router.post('/adduser',addfacultyValidator,(req,res)=>{
                 avatar:"https://res.cloudinary.com/tdtimg/image/upload/v1619852102/wuib8yglnihou4zycrho.jpg",
                 password:hashed,
                 role:"user",
-                faculty:faculty
+                faculty:faculty,
+                deleted:false
             })
             userFaculty.save()
         })
@@ -142,6 +143,7 @@ Router.put("/user/:id",(req,res)=>{
     if(!updateData){
         return res.json({code:2,message:"Không có dữ có dữ liệu cần cập nhật"})
     }
+    
 
     AccountModel.findByIdAndUpdate(id, updateData,{new:true})
     .then(a=>{
