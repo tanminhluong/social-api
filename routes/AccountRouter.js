@@ -201,11 +201,6 @@ Router.put('/update/avatar',CheckLogin,upload.single("image"),async(req,res)=>{
         const {JWT_SECRET} = process.env
         jwt.sign({
             id:account.id,
-            user:account.user,
-            user_name:account.user_name,
-            avatar:account.avatar, 
-            role:account.role,
-            faculty:account.faculty
         },JWT_SECRET,{
             expiresIn:'3h'
         },(err,token)=>{
@@ -221,12 +216,18 @@ Router.put('/update/avatar',CheckLogin,upload.single("image"),async(req,res)=>{
     }
 })
 
-Router.get("/current",CheckLogin,(req,res)=>{
-    res.json({
-        code:0,
-        message: 'lấy dữ liệu phiên đăng nhập thành công',
-        data:req.user
-    })
+Router.get("/current",CheckLogin,async(req,res)=>{
+    try{
+        let data = AccountModel.findById(req.user.id)
+    
+        res.json({
+            code:0,
+            message: 'lấy dữ liệu phiên đăng nhập thành công',
+            data:data
+        })
+    }catch(err){
+        return res.json({code:1,message:err.message})
+    }
 })
 
 module.exports = Router

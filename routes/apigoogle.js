@@ -7,7 +7,6 @@ const mongoose = require('mongoose')
 const client = new OAuth2Client("173768816222-a3th16lqbckuej5epilhsnv3tg0l031q.apps.googleusercontent.com")
 const {cloudinary} = require('../configCloud/Cloudinary')
 
-
 Router.get('/student',(req,res)=>{
     AccountModel.find({role:"student"})
     .then(users =>{
@@ -39,11 +38,6 @@ Router.post('/googlelogin',async(req,res)=>{
                         const {JWT_SECRET} = process.env
                         const token = jwt.sign({
                             id:user.id,
-                            user:user.user,
-                            user_name:user.user_name,
-                            avatar:user.avatar, 
-                            role:user.role,
-                            faculty:user.faculty
                         },JWT_SECRET,{expiresIn:"3h"})
                         res.json({code:0,message:"Đăng nhập thành công",token:token})
                         
@@ -68,11 +62,6 @@ Router.post('/googlelogin',async(req,res)=>{
                             const {JWT_SECRET} = process.env
                             const token = jwt.sign({
                                 id:data.id,
-                                user:data.user,
-                                user_name:data.user_name,
-                                avatar:data.avatar,
-                                role:data.role,
-                                faculty:data.faculty
                                 },JWT_SECRET,{expiresIn:"3d"})
                                 res.json({code:0,message:"Đăng nhập thành công",token:token})
                         })
