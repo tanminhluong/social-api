@@ -218,7 +218,7 @@ Router.put('/update/avatar',CheckLogin,upload.single("image"),async(req,res)=>{
 
 Router.get("/current",CheckLogin,async(req,res)=>{
     try{
-        let data = AccountModel.findById(req.user.id)
+        let data = await AccountModel.findById(req.user.id)
     
         return res.json({
             code:0,
