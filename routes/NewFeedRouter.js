@@ -20,6 +20,22 @@ Router.get('/',(req,res)=>{
     })
 })
 
+Router.get('/commentpost/:id',async(req,res)=>{
+    try{
+        let {id}=req.params 
+        if(!id){
+            throw new Error("không nhận diện thấy id post")
+        }
+
+        let data_cmt = await Newfeed.findOne(mongoose.Types.ObjectId(id),'commentlist').populate('commentlist.user_id','_id user_name avatar').sort({'date': 'desc'})
+        let cmt_list = data_cmt.commentlist
+        
+        return res.json({code:0,message:"đọc danh sách thành công",data:cmt_list})
+    }catch(err){
+        return res.json({code:1,message:err.message})
+    }
+})
+
 Router.get('/:time', async(req,res)=>{
     try{
         let {time} = req.params
@@ -77,7 +93,7 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
         
         let feedlist = await Newfeed.find({"user": mongoose.Types.ObjectId(id)}).populate('user','_id user_name avatar').populate('commentlist.user_id','_id user_name avatar')
         .sort({'date': 'desc'}).limit(10).skip(parseInt(pageSkip))
-        console.log(feedlist)
+
         return res.json({
                 code:0,
                 message: 'Đọc danh sách newfeed thành công',

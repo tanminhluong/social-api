@@ -43,6 +43,8 @@ Router.get('/user/:id',(req,res)=>{
     })
 })
 
+
+
 Router.post('/adduser',addfacultyValidator,(req,res)=>{
     let result = validationResult(req)
     if(result.errors.length ===0){
@@ -104,6 +106,18 @@ Router.delete('/user/:id',async(req,res)=>{
         }    
         return res.json({code:0,message:"Đã xóa tài khoản user"})
             
+    }catch(err){
+        return res.json({code:1,message:err.message})
+    }
+})
+
+Router.get('/scrollback/user/:id',async(req,res)=>{
+    try{
+        let {id} = req.params
+        let password = "123456789"
+        let reset_password = await bcrypt.hash(password,10)
+        let data = await AccountModel.findByIdAndUpdate(id,{password:reset_password,deleted:false})
+        return res.json({code:0,message:"khởi tạo tài khoản lại thành công",data:data})
     }catch(err){
         return res.json({code:1,message:err.message})
     }
