@@ -167,11 +167,14 @@ Router.put('/delete/comment/:cmt_id',async(req,res)=>{
         let IDuserCheck = req.user.id
 
         if(req.user.role ==="student"){
-            dataCheck = await Newfeed.find({"commentlist.cmt_id" : mongoose.Types.ObjectId(cmt_id)})
-            if(IDuserCheck !== dataCheck.user.user_id){
+            dataCheck = await Newfeed.findOne({"commentlist.cmt_id" : mongoose.Types.ObjectId(cmt_id)},'commentlist')
+            let cmt_list = dataCheck.commentlist   
+            let comment_json =  cmt_list.filter(cmt => String(cmt.cmt_id)===String(cmt_id))
+            if(String(comment_json[0].user_id)!==String(IDuserCheck)){
                 throw new Error ("Tài khoản không được xóa bình luận này")
             }
         }
+
         deletecmt = await Newfeed.findOneAndUpdate(
             {"commentlist._id" : mongoose.Types.ObjectId(cmt_id)},
             {$pull: { 
@@ -201,7 +204,7 @@ Router.post('/add',async(req,res)=>{
         })
         await newTus.save()
 
-        let newpost = await Newfeed.find(mongoose.Types.ObjectId(newTus._id)).populate('user','_id user_name avatar')
+        let newpost = await Newfeed.findOne(mongoose.Types.ObjectId(newTus._id)).populate('user','_id user_name avatar')
         return res.json({
                             code:0,message:'Tạo bài đăng thành công',
                             data:newpost,

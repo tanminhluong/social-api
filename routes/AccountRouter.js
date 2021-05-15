@@ -212,7 +212,7 @@ Router.put('/update/avatar',CheckLogin,upload.single("image"),async(req,res)=>{
             if(err) throw err
             return res.json({
                 code:0,
-                message:"cập nhập thành công",
+                message:"cập nhật thành công",
                 token: token
             })
         })

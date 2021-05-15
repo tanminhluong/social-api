@@ -15,6 +15,10 @@ const AccountSchema = new Schema({
     password: String,
     role:String,
     faculty:Array,
-    unread:Array
+    unread:Array,
+    deleted:{
+        type:Boolean,
+        default:false
+    },
 })
 module.exports = mongoose.model('Account',AccountSchema)

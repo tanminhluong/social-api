@@ -85,27 +85,23 @@ Router.post('/adduser',addfacultyValidator,(req,res)=>{
 })
 
 
-Router.delete('/user/:id',(req,res)=>{
-    let {id} = req.params
-    if(!id){
-        return res.json({code:1,message:"Không có thông tin user"})
+Router.delete('/user/:id',async(req,res)=>{
+    try{
+        let {id} = req.params
+        if(!id){
+            throw new Error("Không có id tài khoản")
+        }
+
+        let Account = await AccountModel.findByIdAndUpdate(id,{delete:true,user_name:"tài khoản không khả dụng"},{new:true})
+        if(Account){
+            throw new Error("Không tìm thấy tài khoản user")
+        
+        }    
+        return res.json({code:0,message:"Đã xóa tài khoản user",data:a})
+            
+    }catch(err){
+        return res.json({code:1,message:err.message})
     }
-
-    AccountModel.findByIdAndDelete(id)
-    .then(a=>{
-        if(a){
-            return res.json({code:0,message:"Đã xóa tài khoản user",data:a})
-
-        }else{
-            return res.json({code:2,message:"Không tìm thấy tài khoản user"})
-        }
-    })
-    .catch(e=>{
-        if(e.message.includes('Cast to Object failed')){
-            return res.json({code:3,message:"Đây không phải id hợp lệ"})
-        }
-        return res.json({code:3,message:e.message})
-    })
 })
 
 Router.get('/search_user/:user',async(req,res)=>{
