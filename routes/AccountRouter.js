@@ -220,7 +220,7 @@ Router.get("/current",CheckLogin,async(req,res)=>{
     try{
         let data = AccountModel.findById(req.user.id)
     
-        res.json({
+        return res.json({
             code:0,
             message: 'lấy dữ liệu phiên đăng nhập thành công',
             data:data
