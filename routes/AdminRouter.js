@@ -98,9 +98,8 @@ Router.delete('/user/:id',async(req,res)=>{
                                                         avatar:"https://res.cloudinary.com/tdtimg/image/upload/v1621065055/kas5z5tfafnu1ypuwul6.png",
                                                         password:"000"
                                                     },{new:true})
-        if(Account){
+        if(!Account){
             throw new Error("Không tìm thấy tài khoản user")
-        
         }    
         return res.json({code:0,message:"Đã xóa tài khoản user",data:a})
             
