@@ -2,8 +2,6 @@ const express = require('express')
 const Router = express.Router()
 const {validationResult} = require('express-validator')
 const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const multer = require('multer')
 
 const AccountModel= require('../models/AccountModel')
 const addfacultyValidator = require('./validators/addfacultyValidator')

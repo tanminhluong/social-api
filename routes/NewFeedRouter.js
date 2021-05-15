@@ -261,7 +261,7 @@ Router.post('/add/image',upload.single('image'),async(req,res)=>{
 
         })
         await newTus.save()
-        let newpost = await Newfeed.find({_id:mongoose.Types.ObjectId(newTus._id)}).populate('user','_id user_name avatar')
+        let newpost = await Newfeed.findOne({_id:mongoose.Types.ObjectId(newTus._id)}).populate('user','_id user_name avatar')
         return res.json({
                             code:0,message:'Tạo bài đăng thành công',
                             data:newpost,
