@@ -110,7 +110,7 @@ Router.put('/like/:idtus',async(req,res)=>{
     try{
         let {id,user_name} = req.user
         let idtus = req.params.idtus
-
+        var io = req.app.get('socketio');
         let check = await Newfeed.find({_id:idtus,'likelist.id_user':mongoose.Types.ObjectId(id)})
 
         if (check.length > 0){
@@ -122,13 +122,23 @@ Router.put('/like/:idtus',async(req,res)=>{
                     }
                 }},
                 { safe: true, multi:true })
-            await Newfeed.findByIdAndUpdate(deletelike._id,{$inc:{likecount:-1}},{useFindAndModify:false})
+            let feed = await Newfeed.findByIdAndUpdate(deletelike._id,{$inc:{likecount:-1}},{useFindAndModify:false})
+            io.emit("new_likelist",{data:{
+                    like_count:feed.likecount,
+                    like_list: feed.likelist  
+                }
+            })
             return res.json({code:0,message:'Xóa like bài đăng thành công'})
         }
         
         let updateLike = await Newfeed.findByIdAndUpdate(idtus,{$inc:{likecount:1}},{useFindAndModify:false})
         updateLike.likelist.push({id_user:mongoose.Types.ObjectId(id),user_name:user_name})
         await updateLike.save()
+        io.emit("new_likelist",{data:{
+                like_count : updateLike.likecount,
+                like_list: updateLike.likelist  
+            }
+        })
         return res.json({code:0,message:'Like bài đăng thành công'})
     }catch (err){
         return res.json({code:2,message:err.message})
