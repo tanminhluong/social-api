@@ -124,8 +124,9 @@ Router.put('/like/:idtus',async(req,res)=>{
                 { safe: true, multi:true })
             let feed = await Newfeed.findByIdAndUpdate(deletelike._id,{$inc:{likecount:-1}},{useFindAndModify:false})
             io.emit("new_likelist",{data:{
-                    like_count:feed.likecount,
-                    like_list: feed.likelist  
+                like_post: feed._id,
+                like_count : feed.likecount,
+                like_list: feed.likelist    
                 }
             })
             return res.json({code:0,message:'Xóa like bài đăng thành công'})
