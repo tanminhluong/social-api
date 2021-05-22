@@ -135,6 +135,7 @@ Router.put('/like/:idtus',async(req,res)=>{
         updateLike.likelist.push({id_user:mongoose.Types.ObjectId(id),user_name:user_name})
         await updateLike.save()
         io.emit("new_likelist",{data:{
+                like_post: updateLike._id,
                 like_count : updateLike.likecount,
                 like_list: updateLike.likelist  
             }
