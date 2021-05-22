@@ -109,7 +109,7 @@ Router.delete('/user/:id',async(req,res)=>{
     }
 })
 
-Router.get('/scrollback/user/:id',async(req,res)=>{
+Router.get('/rollback/user/:id',async(req,res)=>{
     try{
         let {id} = req.params
         let password = "123456789"
