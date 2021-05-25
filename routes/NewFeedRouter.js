@@ -108,7 +108,9 @@ Router.get('/yourfeed/:id/:time',async(req,res)=>{
 
 Router.put('/like/:idtus',async(req,res)=>{
     try{
-        let {id,user_name} = req.user
+        let user = await AccountModel.findOne({_id:req.user.id})
+        let id = user.id
+        let user_name = user.user_name
         let idtus = req.params.idtus
         var io = req.app.get('socketio');
         let check = await Newfeed.find({_id:idtus,'likelist.id_user':mongoose.Types.ObjectId(id)})
