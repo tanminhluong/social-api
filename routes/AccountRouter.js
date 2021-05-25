@@ -61,12 +61,7 @@ Router.post('/login',loginValidator,(req,res)=>{
             }
             const {JWT_SECRET} = process.env
             jwt.sign({
-                id:account.id,
-                user:account.user,
-                user_name:account.user_name,
-                avatar:account.avatar, 
-                role:account.role,
-                faculty:account.faculty
+                id:account.id
             },JWT_SECRET,{
                 expiresIn:'3h'
             },(err,token)=>{
