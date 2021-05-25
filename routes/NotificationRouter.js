@@ -388,9 +388,10 @@ Router.post('/add',CheckLogin,NotificationValidator,async(req,res)=>{
         var io = req.app.get('socketio');
         if(result.errors.length ===0){
             let {content,title,role,description}= req.body
-            let userCurrent = req.user.user
-            let roleCurrent = req.user.faculty
-            
+            let user = await AccountModel.findOne({_id:req.user.id})
+            let userCurrent = user.user_name
+            let roleCurrent = user.faculty
+
             if(roleCurrent.includes(role)==false){
                 return res.json({code:2,message:"Tài khoản không được cấp quyền của Role này"}) 
             }
@@ -402,7 +403,7 @@ Router.post('/add',CheckLogin,NotificationValidator,async(req,res)=>{
                 user:userCurrent
             })
             await newNotification.save()
-            console.log(newNotification._id)
+
             io.emit("new_notification",newNotification)
             return res.json({code:0,message:'Tạo thông báo thành công'})             
             }
@@ -416,7 +417,7 @@ Router.post('/add',CheckLogin,NotificationValidator,async(req,res)=>{
             throw new Error (message)
         }
     }catch(err){
-        return res.json({code:1,message:err})
+        return res.json({code:1,message:err.message})
     }
 
     
@@ -426,7 +427,8 @@ Router.put('/update/:id',async(req,res)=>{
     try{    
         let {id} = req.params
         let {title,content,description,faculty} = req.body
-        let role = req.user.role
+        let user = await AccountModel.findOne({_id:req.user.id})
+        let role = user.role
         if(role ==="student"){
             throw new Error("Tài khoản không có quyền này")
         }
@@ -453,7 +455,8 @@ Router.put('/update/:id',async(req,res)=>{
 Router.delete('/delete/:id',async(req,res)=>{
     try{    
         let {id} = req.params
-        let role = req.user.role
+        let user = await AccountModel.findOne({_id:req.user.id})
+        let role = user.role
         if(role ==="student"){
             throw new Error("Tài khoản không có quyền này")
         }
