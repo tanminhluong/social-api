@@ -114,12 +114,15 @@ Router.get('/rollback/user/:id',async(req,res)=>{
         let {id} = req.params
         let password = "123456789"
         let reset_password = await bcrypt.hash(password,10)
-        let data = await AccountModel.findByIdAndUpdate(id,{
+        console.log(reset_password)
+        await AccountModel.findByIdAndUpdate(id,{
             user_name:"Tài khoản quản lý",
             password:reset_password,
             avatar:"https://res.cloudinary.com/tdtimg/image/upload/v1619852102/wuib8yglnihou4zycrho.jpg",
             deleted:false
         })
+        let data = await AccountModel.findById(id)
+
         return res.json({code:0,message:"khởi tạo tài khoản lại thành công",data:data})
     }catch(err){
         return res.json({code:1,message:err.message})
