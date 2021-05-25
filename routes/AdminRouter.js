@@ -8,7 +8,7 @@ const addfacultyValidator = require('./validators/addfacultyValidator')
 
 
 Router.get('/user',(req,res)=>{
-    AccountModel.find({role:"user"})
+    AccountModel.find({role:"user"}).sort({ deleted: true })
     .then(FacultyAccounts =>{
         res.json({
             code:0,
