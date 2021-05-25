@@ -151,9 +151,11 @@ Router.put("/user/:id",(req,res)=>{
 
     let supportedFields = ['password','faculty']
     let updateData = req.body
+    let password_hash =  await bcrypt.hash(updateData.password,10)
     if (updateData.password.length < 6){
         throw new Error("Password vui lòng hơn 6 ký tự")
     }
+    updateData.password = password_hash
     for (field in updateData){
         if(!supportedFields.includes(field)){
             delete updateData[field]
