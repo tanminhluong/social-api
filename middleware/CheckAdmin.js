@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken')
+const AccountModel = require("../models/AccountModel") 
 
-module.exports = (req,res,next) =>{
-    let userRole = req.user.role
+module.exports = async(req,res,next) =>{
+    let user = await AccountModel.findOne({_id:req.user.id})
+    let userRole = user.role
     
     if (userRole!=="admin"){
         return res.status(401)
