@@ -143,45 +143,44 @@ Router.get('/search_user/:user',async(req,res)=>{
     }      
 })
 
-Router.put("/user/:id",(req,res)=>{
-    let {id} = req.params
-    if(!id){
-        return res.json({code:1,message:"Không có thông tin user"})
-    }
-
-    let supportedFields = ['password','faculty']
-    let updateData = req.body
-    let password_hash =  bcrypt.hash(updateData.password,10)
-    if (updateData.password.length < 6){
-        throw new Error("Password vui lòng hơn 6 ký tự")
-    }
-    updateData.password = password_hash
-    for (field in updateData){
-        if(!supportedFields.includes(field)){
-            delete updateData[field]
+Router.put("/user/:id", async(req, res) => {
+    try{
+        let {id} = req.params
+        if(!id){
+            throw new Error("Không có thông tin user")
         }
-    }
 
-    if(!updateData){
-        return res.json({code:2,message:"Không có dữ có dữ liệu cần cập nhật"})
-    }
-    
+        let updateData = req.body
+        let supportedFields = ['password','faculty']
+        if (updateData.password.length < 6){
+            throw new Error("Password vui lòng hơn 6 ký tự")
+        }
+        let password_hash = await bcrypt.hash(updateData.password,10)
+        updateData.password = password_hash
+        for (field in updateData){
+            if(!supportedFields.includes(field)){
+                delete updateData[field]
+            }
+        }
 
-    AccountModel.findByIdAndUpdate(id, updateData,{new:true})
-    .then(a=>{
-        if(a){
-            return res.json({code:0,message:"Đã cập nhật tài khoản user",data:a})
+        if(!updateData){
+            throw new Error ("Không có dữ có dữ liệu cần cập nhật")
+        }
+        
+
+        let newUpdate_Account = await AccountModel.findByIdAndUpdate(id, updateData,{new:true})
+        
+        if(newUpdate_Account){
+            return res.json({code:0,message:"Đã cập nhật tài khoản user",data:newUpdate_Account})
 
         }else{
             return res.json({code:2,message:"Không tìm thấy tài khoản user"})
         }
-    })
-    .catch(e=>{
-        if(e.message.includes('Cast to Object failed')){
-            return res.json({code:3,message:"Đây không phải id hợp lệ"})
-        }
-        return res.json({code:3,message:e.message})
-    })
+        
+
+    }catch(err){
+        return res.json({code:1,message:err.message})
+    }
 })
 
 
