@@ -129,7 +129,6 @@ Router.put('/like/:idtus',async(req,res)=>{
                 like_list: feed.likelist    
                 }
             })
-            console.log(feed.likecount)
             return res.json({code:0,message:'Xóa like bài đăng thành công'})
         }
         
@@ -142,7 +141,6 @@ Router.put('/like/:idtus',async(req,res)=>{
                 like_list: updateLike.likelist  
             }
         })
-        console.log(updateLike.likecount)
         return res.json({code:0,message:'Like bài đăng thành công'})
     }catch (err){
         return res.json({code:2,message:err.message})
