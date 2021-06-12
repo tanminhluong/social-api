@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
+const { DateTime } = require('luxon');
 
 const NotificationSchema = new Schema({
     title:String,
@@ -7,7 +8,7 @@ const NotificationSchema = new Schema({
     description:String,
     role:String,
     user:String,
-    date:Date
+    date:{type: Date, default: Date.now}
 })
 
 module.exports = mongoose.model('Notification',NotificationSchema)

@@ -6,6 +6,7 @@ const FacultyAccountSchema = new Schema({
         type:String,
         unique: true
     },
+    avatar:String,
     password: String,
     role:Array,
 })
