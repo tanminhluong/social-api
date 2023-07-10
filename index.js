@@ -24,13 +24,21 @@ const passportSetup = require("./routes/validators/googlePassport");
 dotenv.config();
 const app = express();
 connectDB();
-
-app.use(
-  cors({
-    origin: "http://localhost:9000",
-    credentials: true,
-  })
-);
+var whitelist = [
+  "http://localhost:9000",
+  "https://master--stdsocialnetwork.netlify.app",
+];
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(passport.initialize());
 app.use(passport.session());
 
