@@ -80,7 +80,7 @@ app.use("/account", AccountRouter);
 app.use("/addrole", AddRole);
 app.use("/admin", CheckLogin, CheckAdmin, AdminRouter);
 app.use("/newfeed", CheckLogin, NewFeedRouter);
-app.use("/auth", apigoogle);
+app.use("/api", apigoogle);
 app.use("/chat", CheckLogin, ChatRouter);
 app.use("/message", CheckLogin, MessageRouter);
 
