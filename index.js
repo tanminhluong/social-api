@@ -98,6 +98,8 @@ const io = require("socket.io")(server, {
   },
 });
 
+app.set("socketio", io);
+
 io.on("connection", (socket) => {
   console.log("connected to socket.io");
 
@@ -126,6 +128,11 @@ io.on("connection", (socket) => {
       socket.in(user._id).emit("message received", newMessage);
     });
   });
+
+  // socket.on("newLikePost", (data) => {
+  //   console.log(data);
+  //   socket.emit("new_likelist", data);
+  // });
 
   socket.off("setup", () => {
     console.log("User disconnected");
