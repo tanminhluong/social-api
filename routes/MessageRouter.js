@@ -5,25 +5,47 @@ const Chat = require("../models/ChatModel");
 
 const router = express.Router();
 
+const { cloudinary } = require("../configCloud/Cloudinary");
+const upload = require("../configCloud/multer");
+
 router.post("/", async (req, res) => {
-  const { content, chatId } = req.body;
-  if (!content || !chatId) {
+  const { content, chatId, photo } = req.body;
+  if (!chatId) {
     console.log("Invalid data passed into request");
     return res.sendStatus(400);
   }
 
-  let newMessage = {
-    sender: req.user.id,
-    content: content,
-    chat: chatId,
-  };
+  let newMessage = null;
+
+  if (photo) {
+    const photoCloud = await cloudinary.uploader.upload(photo, {
+      format: "jpg",
+    });
+    newMessage = {
+      sender: req.user.id,
+      content: content,
+      photo: {
+        link: photoCloud.secure_url,
+        photoId: photoCloud.public_id,
+      },
+      chat: chatId,
+    };
+  } else {
+    newMessage = {
+      sender: req.user.id,
+      content: content,
+      photo: {},
+      chat: chatId,
+    };
+  }
 
   try {
     let message = await Message.create(newMessage);
 
     let fullMessage = await Message.findOne({ _id: message._id })
       .populate("sender", "user_name avatar")
-      .populate("chat");
+      .populate("chat")
+      .populate("photo");
 
     fullMessage = await Account.populate(fullMessage, {
       path: "chat.users",

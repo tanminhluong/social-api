@@ -46,7 +46,7 @@ const CheckLogin = require("./auth/CheckLogin");
 const CheckAdmin = require("./middleware/CheckAdmin");
 
 app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
 app.use(
   helmet({
     crossOriginOpenerPolicy: "cross-origin-allow-popups",
@@ -114,8 +114,8 @@ io.on("connection", (socket) => {
     console.log("User join room: " + room);
   });
 
-  socket.on("typing", (room) => socket.in(room).emit("typing"));
-  socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+  socket.on("typing", (room) => socket.to(room).emit("typing"));
+  socket.on("stop typing", (room) => socket.to(room).emit("stop typing"));
 
   socket.on("new message", (newMessage) => {
     let chat = newMessage.chat;
@@ -125,7 +125,7 @@ io.on("connection", (socket) => {
     chat.users.forEach((user) => {
       if (user._id === newMessage.sender._id) return;
 
-      socket.in(user._id).emit("message received", newMessage);
+      socket.to(user._id).emit("message received", newMessage);
     });
   });
 
