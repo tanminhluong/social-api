@@ -10,6 +10,14 @@ const messageSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
+    photo: {
+      link: {
+        type: String,
+      },
+      photoId: {
+        type: String,
+      },
+    },
     chat: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Chat",
