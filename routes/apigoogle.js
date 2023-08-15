@@ -29,83 +29,83 @@ function generateJwtToken(userId) {
 }
 
 Router.post("/googlelogin", async (req, res) => {
-  const { tokenId } = req.body;
+  const { verified_email, name, email, picture } = req.body;
   let original_id = mongoose.Types.ObjectId();
 
-  client
-    .verifyIdToken({
-      idToken: tokenId,
-      audience: process.env.CLIENT_ID_GG,
-    })
-    .then((response) => {
-      // console.log(response.payload);
-      const { email_verified, name, email, picture, hd } = response.payload;
-      if (!hd || hd !== "student.tdtu.edu.vn") {
+  // client
+  //   .verifyIdToken({
+  //     idToken: tokenId,
+  //     audience: process.env.CLIENT_ID_GG,
+  //   })
+  //   .then((response) => {
+  //     // console.log(response.payload);
+  //     const { email_verified, name, email, picture, hd } = response.payload;
+  //     if (!hd || hd !== "student.tdtu.edu.vn") {
+  //       return res.json({
+  //         code: 2,
+  //         message: "Tài khoản không phù hợp",
+  //       });
+  //     }
+  if (verified_email) {
+    AccountModel.findOne({ user: email }).exec((err, user) => {
+      if (err) {
         return res.json({
           code: 2,
-          message: "Tài khoản không phù hợp",
+          message: err.message,
         });
-      }
-      if (email_verified) {
-        AccountModel.findOne({ user: email }).exec((err, user) => {
-          if (err) {
-            return res.json({
-              code: 2,
-              message: err.message,
+      } else {
+        if (user) {
+          const { JWT_SECRET } = process.env;
+          const token = jwt.sign(
+            {
+              id: user.id,
+            },
+            JWT_SECRET,
+            { expiresIn: "3h" }
+          );
+          res.json({
+            code: 0,
+            message: "Đăng nhập thành công",
+            token: token,
+          });
+        } else {
+          cloudinary.uploader.upload(picture).then((imageCloud) => {
+            let newAccount = new AccountModel({
+              _id: original_id,
+              user: email,
+              user_name: name,
+              avatar: imageCloud.secure_url,
+              id_avatar: imageCloud.public_id,
+              role: "student",
             });
-          } else {
-            if (user) {
+            newAccount.save((err, data) => {
+              if (err) {
+                return res.json({
+                  code: 2,
+                  message: err.message,
+                });
+              }
+
               const { JWT_SECRET } = process.env;
               const token = jwt.sign(
                 {
-                  id: user.id,
+                  id: data.id,
                 },
                 JWT_SECRET,
-                { expiresIn: "3h" }
+                { expiresIn: "3d" }
               );
               res.json({
                 code: 0,
                 message: "Đăng nhập thành công",
                 token: token,
               });
-            } else {
-              cloudinary.uploader.upload(picture).then((imageCloud) => {
-                let newAccount = new AccountModel({
-                  _id: original_id,
-                  user: email,
-                  user_name: name,
-                  avatar: imageCloud.secure_url,
-                  id_avatar: imageCloud.public_id,
-                  role: "student",
-                });
-                newAccount.save((err, data) => {
-                  if (err) {
-                    return res.json({
-                      code: 2,
-                      message: err.message,
-                    });
-                  }
-
-                  const { JWT_SECRET } = process.env;
-                  const token = jwt.sign(
-                    {
-                      id: data.id,
-                    },
-                    JWT_SECRET,
-                    { expiresIn: "3d" }
-                  );
-                  res.json({
-                    code: 0,
-                    message: "Đăng nhập thành công",
-                    token: token,
-                  });
-                });
-              });
-            }
-          }
-        });
+            });
+          });
+        }
       }
     });
+  }
+  //   });
 });
 
 module.exports = Router;
