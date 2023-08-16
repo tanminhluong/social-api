@@ -38,7 +38,7 @@ var corsOptions = {
   },
   credentials: true,
 };
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(passport.initialize());
 app.use(passport.session());
 
