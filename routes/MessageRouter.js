@@ -17,29 +17,29 @@ router.post("/", async (req, res) => {
 
   let newMessage = null;
 
-  if (photo) {
-    const photoCloud = await cloudinary.uploader.upload(photo, {
-      format: "jpg",
-    });
-    newMessage = {
-      sender: req.user.id,
-      content: content,
-      photo: {
-        link: photoCloud.secure_url,
-        photoId: photoCloud.public_id,
-      },
-      chat: chatId,
-    };
-  } else {
-    newMessage = {
-      sender: req.user.id,
-      content: content,
-      photo: {},
-      chat: chatId,
-    };
-  }
-
   try {
+    if (photo) {
+      const photoCloud = await cloudinary.uploader.upload(photo, {
+        format: "jpg",
+      });
+      newMessage = {
+        sender: req.user.id,
+        content: content,
+        photo: {
+          link: photoCloud.secure_url,
+          photoId: photoCloud.public_id,
+        },
+        chat: chatId,
+      };
+    } else {
+      newMessage = {
+        sender: req.user.id,
+        content: content,
+        photo: {},
+        chat: chatId,
+      };
+    }
+
     let message = await Message.create(newMessage);
 
     let fullMessage = await Message.findOne({ _id: message._id })
@@ -67,10 +67,11 @@ router.post("/", async (req, res) => {
     );
     res.json(fullMessage);
   } catch (error) {
-    res.status(400);
+    res.status(400).json({ err: error.message });
     throw new Error(error.message);
   }
 });
+
 router.get("/:chatId", async (req, res) => {
   try {
     const messages = await Message.find({ chat: req.params.chatId })

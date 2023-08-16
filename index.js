@@ -24,21 +24,27 @@ const passportSetup = require("./routes/validators/googlePassport");
 dotenv.config();
 const app = express();
 connectDB();
-var whitelist = [
-  "http://localhost:9000",
-  "https://master--stdsocialnetwork.netlify.app",
-];
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-};
-app.use(cors());
+
+app.all("/", function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
+// var whitelist = [
+//   "http://localhost:9000",
+//   "https://master--stdsocialnetwork.netlify.app",
+// ];
+// var corsOptions = {
+//   origin: function (origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+// };
+// app.use(cors());
 app.use(passport.initialize());
 app.use(passport.session());
 
