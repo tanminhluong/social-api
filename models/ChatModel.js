@@ -21,6 +21,9 @@ const chatSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Message",
     },
+    seen: {
+      type: Boolean,
+    },
   },
   {
     timestamps: true,

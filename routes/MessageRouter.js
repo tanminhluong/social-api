@@ -62,6 +62,7 @@ router.post("/", async (req, res) => {
       { _id: chatId },
       {
         latestMessage: fullMessage,
+        seen: false,
       },
       { new: true }
     );

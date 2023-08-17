@@ -25,6 +25,14 @@ dotenv.config();
 const app = express();
 connectDB();
 
+app.use(passport.initialize());
+app.use(passport.session());
+
+const CheckLogin = require("./auth/CheckLogin");
+const CheckAdmin = require("./middleware/CheckAdmin");
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: "50mb" }));
 var whitelist = [
   "http://localhost:9000",
   "https://master--stdsocialnetwork.netlify.app",
@@ -40,14 +48,6 @@ var corsOptions = {
   credentials: true,
 };
 app.use(cors());
-app.use(passport.initialize());
-app.use(passport.session());
-
-const CheckLogin = require("./auth/CheckLogin");
-const CheckAdmin = require("./middleware/CheckAdmin");
-
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json({ limit: "50mb" }));
 // app.use(
 //   helmet({
 //     crossOriginOpenerPolicy: "same-origin-allow-popups",

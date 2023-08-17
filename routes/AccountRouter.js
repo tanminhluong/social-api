@@ -81,6 +81,8 @@ Router.get("/user/:id", (req, res) => {
 //       user: user,
 //       password: hashPass,
 //       role: role,
+//       avatar:
+//         "https://res.cloudinary.com/tdtimg/image/upload/v1619852102/wuib8yglnihou4zycrho.jpg",
 //     });
 //     if (newUser) {
 //       return res.json({

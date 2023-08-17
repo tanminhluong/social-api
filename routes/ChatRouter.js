@@ -52,6 +52,7 @@ router.post("/", async (req, res) => {
     }
   }
 });
+
 router.get("/", async (req, res) => {
   try {
     let result = await Chat.find({
@@ -71,6 +72,27 @@ router.get("/", async (req, res) => {
     throw new Error(error.message);
   }
 });
+
+// update seen status
+router.put("/:chatId", async (req, res) => {
+  const { chatId } = req.params;
+  try {
+    let updatedChat = await Chat.findByIdAndUpdate(
+      chatId,
+      {
+        seen: true,
+      },
+      { new: true }
+    ).populate("users", "-password");
+    return res
+      .status(200)
+      .json({ code: 0, message: "Đã xem tin nhắn", data: updatedChat });
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
+
 // router.post("/group", protect, createGroupChat);
 // router.put("/rename", protect, renameGroup);
 // router.put("/group-remove", protect, removeFromGroup);
