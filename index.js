@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json({ limit: "50mb" }));
 var whitelist = [
   "http://localhost:9000",
-  "https://master--stdsocialnetwork.netlify.app",
+  "https://stdsocialnetwork.netlify.app",
 ];
 var corsOptions = {
   origin: function (origin, callback) {
