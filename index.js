@@ -99,7 +99,7 @@ const server = app.listen(PORT, console.log(`http://localhost:${PORT}`));
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "https://stdsocialnetwork.netlify.app",
+    origin: ["https://stdsocialnetwork.netlify.app", "http://localhost:9000"],
   },
 });
 
